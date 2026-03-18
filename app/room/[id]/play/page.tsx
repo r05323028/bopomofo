@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -95,7 +96,7 @@ export default function PlayPage() {
         {roomState.phase === "in-game" && isMyTurn && !me.isEliminated ? (
           <section className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="flex gap-2">
-              <button
+              <motion.button
                 className={`rounded-lg px-3 py-2 text-sm font-semibold ${
                   mode === "component"
                     ? "bg-zinc-900 text-white"
@@ -103,10 +104,12 @@ export default function PlayPage() {
                 } transition hover:-translate-y-0.5 hover:shadow-sm`}
                 onClick={() => setMode("component")}
                 type="button"
+                whileHover={{ y: -2, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
               >
                 猜注音符號
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 className={`rounded-lg px-3 py-2 text-sm font-semibold ${
                   mode === "answer"
                     ? "bg-zinc-900 text-white"
@@ -114,9 +117,11 @@ export default function PlayPage() {
                 } transition hover:-translate-y-0.5 hover:shadow-sm`}
                 onClick={() => setMode("answer")}
                 type="button"
+                whileHover={{ y: -2, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
               >
                 猜完整答案
-              </button>
+              </motion.button>
             </div>
 
             {mode === "component" ? (
@@ -131,7 +136,7 @@ export default function PlayPage() {
                   const disabled = guessed.has(symbol);
 
                   return (
-                    <button
+                    <motion.button
                       className={`rounded-lg border px-2 py-2 text-sm font-semibold ${
                         disabled
                           ? "border-zinc-200 bg-zinc-100 text-zinc-400"
@@ -146,13 +151,15 @@ export default function PlayPage() {
                         });
                       }}
                       type="button"
+                      whileHover={disabled ? undefined : { y: -2, scale: 1.02 }}
+                      whileTap={disabled ? undefined : { scale: 0.97 }}
                     >
                       {isToneSymbol ? (
                         <span className="tone-glyph">{display}</span>
                       ) : (
                         display
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
