@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "outDir": "dist",
+    "isolatedModules": false,
+    "incremental": false,
+    "declaration": false,
+    "baseUrl": "."
+  },
+  "include": ["server.ts", "lib/game/**/*.ts"],
+  "exclude": ["node_modules", ".next"]
+}
