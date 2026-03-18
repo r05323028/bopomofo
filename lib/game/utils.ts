@@ -22,7 +22,7 @@ export function isAnswerComplete(
 
   const incompleteRows = answer.reduce<number[]>((rows, cell, index) => {
     const charCount = Array.from(cell.character.trim()).length;
-    if (charCount !== 1 || !cell.final) {
+    if (charCount !== 1) {
       rows.push(index);
     }
     return rows;

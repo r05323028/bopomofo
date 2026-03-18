@@ -23,13 +23,11 @@ export function WordBox({
   return (
     <div className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
       {answer.map((row, index) => {
-        const toneKey = row.tone ?? row.topTone ?? "1";
+        const toneKey = row.tone ?? "1";
         const topToneVisible =
-          fullyRevealed ||
-          showOnlyTone ||
-          guessedComponents.has(row.topTone ?? "");
+          fullyRevealed || guessedComponents.has(row.topTone ?? "");
         const rightToneVisible =
-          fullyRevealed || showOnlyTone || guessedComponents.has(toneKey);
+          fullyRevealed || guessedComponents.has(toneKey);
         const initialVisible =
           (showOnlyTone ? false : fullyRevealed) ||
           (row.initial ? guessedComponents.has(row.initial) : false);

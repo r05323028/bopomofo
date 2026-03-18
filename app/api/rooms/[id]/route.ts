@@ -23,6 +23,7 @@ export async function GET(_request: Request, context: RouteContext) {
       players: room.players.map((player) => ({
         id: player.id,
         displayName: player.displayName,
+        avatarUrl: player.avatarUrl,
         hasSubmitted: player.hasSubmitted,
         isEliminated: player.isEliminated,
       })),

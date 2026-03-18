@@ -119,6 +119,7 @@ async function handleApiRoutes(req, res) {
             players: room.players.map((player) => ({
                 id: player.id,
                 displayName: player.displayName,
+                avatarUrl: player.avatarUrl,
                 hasSubmitted: player.hasSubmitted,
                 isEliminated: player.isEliminated,
             })),
@@ -136,16 +137,22 @@ async function handleApiRoutes(req, res) {
         try {
             const body = await readJsonBody(req);
             const displayName = typeof body.displayName === "string" ? body.displayName : "";
+            const avatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl : null;
             const answer = (Array.isArray(body.answer) ? body.answer : []);
             const validation = (0, utils_1.isAnswerComplete)(answer, room.wordCount);
             if (!validation.valid) {
+                const rows = validation.incompleteRows.map((index) => index + 1);
                 writeJson(res, 400, {
-                    message: "答案尚未填寫完整。",
-                    incompleteRows: validation.incompleteRows,
+                    message: `每一列都必須剛好輸入一個字（第 ${rows.join(", ")} 列）。`,
+                    incompleteRows: rows,
                 });
                 return true;
             }
-            const player = roomManager_1.gameRoomManager.addPlayer({ roomId, displayName });
+            const player = roomManager_1.gameRoomManager.addPlayer({
+                roomId,
+                displayName,
+                avatarUrl,
+            });
             roomManager_1.gameRoomManager.submitAnswer(roomId, player.id, answer);
             const io = (0, socketServer_1.getSocketServer)();
             io?.to(roomId).emit("player-joined", { player });

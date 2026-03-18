@@ -67,9 +67,12 @@ export function WordInput({
   return (
     <div className="space-y-3">
       {rows.map((row, index) => (
-        <div className="grid grid-cols-[1fr_7rem] gap-3" key={rowKeys[index]}>
+        <div
+          className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_7rem] sm:gap-3"
+          key={rowKeys[index]}
+        >
           <input
-            className="h-24 rounded-lg border border-zinc-300 bg-white px-4 text-center text-4xl font-bold text-zinc-900"
+            className="h-20 rounded-lg border border-zinc-300 bg-white px-4 text-center text-3xl font-bold text-zinc-900 sm:h-24 sm:text-4xl"
             onChange={(event) => {
               updateRow(index, { character: event.target.value });
             }}
@@ -77,7 +80,7 @@ export function WordInput({
             value={row.character}
           />
 
-          <div className="grid grid-rows-[2rem_2rem_2rem_2rem] gap-1">
+          <div className="grid grid-rows-[2rem_2rem_2rem_2rem] gap-1 sm:w-28">
             <button
               className="rounded border border-zinc-300 bg-white text-sm text-zinc-900"
               onClick={() =>

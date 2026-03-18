@@ -36,7 +36,7 @@ export function BopomofoPicker({
   }
 
   const symbols = byType[type];
-  const showClear = type !== "final";
+  const showClear = true;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">

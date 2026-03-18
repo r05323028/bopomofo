@@ -17,6 +17,7 @@ export type PlayerAnswer = BopomofoCell[];
 export type Player = {
   id: string;
   displayName: string;
+  avatarUrl: string | null;
   isEliminated: boolean;
   hasSubmitted: boolean;
   joinedAt: number;

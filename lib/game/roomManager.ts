@@ -24,6 +24,7 @@ type CreateRoomInput = {
 type JoinRoomInput = {
   roomId: string;
   displayName: string;
+  avatarUrl?: string | null;
 };
 
 type GuessAnswerInput = {
@@ -157,6 +158,7 @@ class GameRoomManager {
     const player: Player = {
       id: createId("player"),
       displayName,
+      avatarUrl: input.avatarUrl ?? null,
       isEliminated: false,
       hasSubmitted: false,
       joinedAt: Date.now(),
@@ -180,7 +182,10 @@ class GameRoomManager {
     const validation = isAnswerComplete(sanitized, room.wordCount);
 
     if (!validation.valid) {
-      throw new Error("答案尚未填寫完整。");
+      const rows = validation.incompleteRows
+        .map((index) => index + 1)
+        .join(", ");
+      throw new Error(`每一列都必須剛好輸入一個字（第 ${rows} 列）。`);
     }
 
     room.answers[playerId] = sanitized;

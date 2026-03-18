@@ -11,6 +11,7 @@ type RouteContext = {
 
 type JoinBody = {
   displayName?: string;
+  avatarUrl?: string;
   answer?: PlayerAnswer;
 };
 
@@ -35,10 +36,11 @@ export async function POST(request: Request, context: RouteContext) {
 
   const validation = isAnswerComplete(body.answer, room.wordCount);
   if (!validation.valid) {
+    const rows = validation.incompleteRows.map((index) => index + 1);
     return NextResponse.json(
       {
-        message: "答案尚未填寫完整。",
-        incompleteRows: validation.incompleteRows,
+        message: `每一列都必須剛好輸入一個字（第 ${rows.join(", ")} 列）。`,
+        incompleteRows: rows,
       },
       { status: 400 },
     );
@@ -48,6 +50,7 @@ export async function POST(request: Request, context: RouteContext) {
     const player = gameRoomManager.addPlayer({
       roomId: room.id,
       displayName: body.displayName ?? "",
+      avatarUrl: body.avatarUrl ?? null,
     });
 
     gameRoomManager.submitAnswer(room.id, player.id, body.answer);

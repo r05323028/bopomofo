@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -141,7 +142,21 @@ export default function HostRoomPage() {
                     className="flex items-center justify-between rounded-lg border border-zinc-200 px-3 py-2"
                     key={player.id}
                   >
-                    <span className="font-medium text-zinc-900">
+                    <span className="flex items-center gap-2 font-medium text-zinc-900">
+                      {player.avatarUrl ? (
+                        <Image
+                          alt={`${player.displayName} 頭貼`}
+                          className="h-6 w-6 rounded-full border border-zinc-200 object-cover"
+                          src={player.avatarUrl}
+                          unoptimized
+                          width={24}
+                          height={24}
+                        />
+                      ) : (
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs text-zinc-600">
+                          ？
+                        </span>
+                      )}
                       {player.displayName}
                     </span>
                     <span
@@ -204,7 +219,21 @@ export default function HostRoomPage() {
                   key={player.id}
                 >
                   <div className="mb-2 flex items-center justify-between">
-                    <h3 className="font-semibold text-zinc-900">
+                    <h3 className="flex items-center gap-2 font-semibold text-zinc-900">
+                      {player.avatarUrl ? (
+                        <Image
+                          alt={`${player.displayName} 頭貼`}
+                          className="h-7 w-7 rounded-full border border-zinc-200 object-cover"
+                          src={player.avatarUrl}
+                          unoptimized
+                          width={28}
+                          height={28}
+                        />
+                      ) : (
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-200 text-xs text-zinc-600">
+                          ？
+                        </span>
+                      )}
                       {player.displayName}
                     </h3>
                     {player.isEliminated ? (

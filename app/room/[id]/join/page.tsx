@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -11,6 +12,13 @@ type RoomInfo = {
   topic: string;
   wordCount: number;
   phase: RoomPhase;
+  players?: Array<{
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+    hasSubmitted: boolean;
+    isEliminated: boolean;
+  }>;
 };
 
 const emptyAnswer: PlayerAnswer = [];
@@ -21,6 +29,7 @@ export default function JoinRoomPage() {
 
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
   const [name, setName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [answer, setAnswer] = useState<PlayerAnswer>(emptyAnswer);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,7 +74,7 @@ export default function JoinRoomPage() {
   const validateRows = (): number[] => {
     return answer.reduce<number[]>((rows, cell, index) => {
       const charCount = Array.from(cell.character.trim()).length;
-      if (charCount !== 1 || !cell.final) {
+      if (charCount !== 1) {
         rows.push(index + 1);
       }
       return rows;
@@ -87,7 +96,7 @@ export default function JoinRoomPage() {
     const incompleteRows = validateRows();
     if (answer.length !== roomInfo.wordCount || incompleteRows.length > 0) {
       setError(
-        `每一列都必須「剛好一個字」且有韻母（第 ${incompleteRows.join(", ")} 列）。`,
+        `每一列都必須「剛好一個字」（第 ${incompleteRows.join(", ")} 列）。`,
       );
       return;
     }
@@ -101,15 +110,21 @@ export default function JoinRoomPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ displayName: name, answer }),
+        body: JSON.stringify({ displayName: name, avatarUrl, answer }),
       });
 
       const payload = (await response.json()) as
         | { playerId: string }
-        | { message: string };
+        | { message: string; incompleteRows?: number[] };
 
       if (!response.ok || !("playerId" in payload)) {
-        setError("message" in payload ? payload.message : "加入房間失敗。");
+        if ("incompleteRows" in payload && payload.incompleteRows?.length) {
+          setError(
+            `每一列都必須剛好輸入一個字（第 ${payload.incompleteRows.join(", ")} 列）。`,
+          );
+        } else {
+          setError("message" in payload ? payload.message : "加入房間失敗。");
+        }
         return;
       }
 
@@ -165,6 +180,40 @@ export default function JoinRoomPage() {
               onChange={(event) => setName(event.target.value)}
               value={name}
             />
+          </label>
+
+          <label className="block space-y-1">
+            <span className="text-sm font-medium">頭貼（可選）</span>
+            <input
+              accept="image/*"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (!file) {
+                  setAvatarUrl(null);
+                  return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                  if (typeof reader.result === "string") {
+                    setAvatarUrl(reader.result);
+                  }
+                };
+                reader.readAsDataURL(file);
+              }}
+              type="file"
+            />
+            {avatarUrl ? (
+              <Image
+                alt="頭貼預覽"
+                className="mt-2 h-12 w-12 rounded-full border border-zinc-200 object-cover"
+                src={avatarUrl}
+                unoptimized
+                width={48}
+                height={48}
+              />
+            ) : null}
           </label>
 
           <WordInput
