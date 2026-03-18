@@ -56,35 +56,40 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-amber-50 via-white to-sky-50 p-6 text-zinc-900 sm:p-10">
-      <div className="mx-auto max-w-xl rounded-3xl border border-zinc-200 bg-white/85 p-6 shadow-lg backdrop-blur sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
+    <main className="min-h-screen bg-background p-6 text-text sm:p-10">
+      <div className="mx-auto max-w-xl rounded-3xl border-[3px] border-primary/15 bg-surface p-6 shadow-[0_6px_0_0_rgb(79_70_229/0.15)] sm:p-8">
+        <p className="text-xs font-bold uppercase tracking-[0.24em] text-cta font-display">
           注音派對
         </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl font-display">
           建立房間
         </h1>
-        <p className="mt-2 text-sm text-zinc-600">
+        <p className="mt-2 text-sm text-text-muted">
           設定主題與字數，接著分享 QR Code 讓玩家加入。
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={handleCreateRoom}>
           <label className="block space-y-1">
-            <span className="text-sm font-medium">主題</span>
+            <span className="text-sm font-semibold">主題</span>
             <input
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+              className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 text-text shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 focus:shadow-[0_3px_0_0_rgb(79_70_229/0.2)]"
               onChange={(event) => setTopic(event.target.value)}
               placeholder="例如：台灣小吃"
               value={topic}
+              type="text"
+              inputMode="text"
+              autoComplete="off"
+              aria-label="房間主題"
             />
           </label>
 
           <label className="block space-y-1">
-            <span className="text-sm font-medium">題目字數</span>
+            <span className="text-sm font-semibold">題目字數</span>
             <select
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+              className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 text-text shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 focus:shadow-[0_3px_0_0_rgb(79_70_229/0.2)] cursor-pointer"
               onChange={(event) => setWordCount(Number(event.target.value))}
               value={wordCount}
+              aria-label="題目字數"
             >
               <option value={1}>1</option>
               <option value={2}>2</option>
@@ -94,17 +99,47 @@ export default function Home() {
           </label>
 
           {error ? (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              className="rounded-2xl border-[3px] border-error/30 bg-error/10 px-4 py-3 text-sm font-medium text-error"
+              role="alert"
+            >
               {error}
             </p>
           ) : null}
 
           <button
-            className="w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
+            className="w-full rounded-2xl bg-primary text-white px-4 py-3 text-sm font-bold border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 font-display"
             disabled={loading}
             type="submit"
+            aria-live="polite"
           >
-            {loading ? "建立中..." : "建立房間"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                建立中...
+              </span>
+            ) : (
+              "建立房間"
+            )}
           </button>
         </form>
       </div>

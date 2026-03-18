@@ -1,79 +1,147 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Claymorphism Color Palette */
+  --color-primary: #4f46e5;
+  --color-primary-light: #818cf8;
+  --color-primary-dark: #3730a3;
+  --color-secondary: #818cf8;
+  --color-cta: #f97316;
+  --color-cta-dark: #ea580c;
+  --color-background: #eef2ff;
+  --color-surface: #ffffff;
+  --color-text: #1e1b4b;
+  --color-text-muted: #64748b;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+
+  /* Z-Index Scale */
+  --z-background: -10;
+  --z-default: 1;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal: 40;
+  --z-popover: 50;
+  --z-tooltip: 60;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Colors */
+  --color-primary: #4f46e5;
+  --color-primary-light: #818cf8;
+  --color-primary-dark: #3730a3;
+  --color-secondary: #818cf8;
+  --color-cta: #f97316;
+  --color-cta-dark: #ea580c;
+  --color-background: #eef2ff;
+  --color-surface: #ffffff;
+  --color-text: #1e1b4b;
+  --color-text-muted: #64748b;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Fonts */
+  --font-sans: var(--font-nunito);
+  --font-display: var(--font-fredoka);
+  --font-tone: var(--font-tone-serif);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans), sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .tone-glyph {
-  font-family: var(--font-tone-serif), "Noto Serif TC", "PingFang TC", serif;
+  font-family: var(--font-tone), "Noto Serif TC", "PingFang TC", serif;
   font-weight: 900;
   font-size: 1.25rem;
   line-height: 1;
-  color: #b45309;
+  color: var(--color-cta-dark);
 }
 
 .active-player-highlight {
-  border-color: #f59e0b;
+  border-color: var(--color-warning);
   box-shadow:
-    0 0 0 1px #f59e0b,
-    0 0 0 4px rgb(251 191 36 / 22%);
+    0 0 0 1px var(--color-warning),
+    0 0 0 4px rgb(245 158 11 / 0.22);
 }
 
 .game-player-card {
-  background: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%);
-  border: 1px solid #d4d4d8;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    rgb(249 250 251) 100%
+  );
+  border: 3px solid rgb(79 70 229 / 0.15);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 0 0 rgb(79 70 229 / 0.2),
+    0 2px 8px rgb(0 0 0 / 0.05);
   transition:
-    transform 220ms ease,
-    box-shadow 260ms ease,
-    border-color 220ms ease,
-    background 260ms ease;
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease;
+  cursor: pointer;
 }
 
 .game-player-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgb(0 0 0 / 10%);
+  box-shadow:
+    0 6px 0 0 rgb(79 70 229 / 0.25),
+    0 4px 16px rgb(0 0 0 / 0.1);
+}
+
+.game-player-card:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
 }
 
 .game-player-card-active {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border: 1px solid #f59e0b;
+  background: linear-gradient(
+    135deg,
+    rgb(254 243 199) 0%,
+    rgb(253 230 138) 100%
+  );
+  border: 3px solid var(--color-warning);
   box-shadow:
-    0 0 0 1px #f59e0b,
-    0 0 0 5px rgb(251 191 36 / 25%),
-    0 8px 20px rgb(245 158 11 / 25%);
+    0 0 0 1px var(--color-warning),
+    0 0 0 5px rgb(251 191 36 / 0.25),
+    0 4px 0 0 rgb(245 158 11 / 0.5),
+    0 8px 20px rgb(245 158 11 / 0.25);
 }
 
 .game-badge-active {
-  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
-  color: #fff;
-  border: 1px solid #d97706;
-  box-shadow: 0 3px 10px rgb(245 158 11 / 35%);
+  background: linear-gradient(
+    90deg,
+    var(--color-warning) 0%,
+    var(--color-cta) 100%
+  );
+  color: var(--color-surface);
+  border: 2px solid var(--color-cta-dark);
+  border-radius: 12px;
+  box-shadow:
+    0 3px 0 0 rgb(234 88 12 / 0.5),
+    0 3px 10px rgb(245 158 11 / 0.35);
 }
 
 .game-badge-soft {
-  transition: transform 180ms ease;
+  transition: transform 150ms ease;
+  cursor: pointer;
 }
 
 .game-badge-soft:hover {
@@ -90,19 +158,26 @@ body {
   left: 0;
   bottom: -2px;
   width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-warning) 0%,
+    var(--color-cta) 100%
+  );
+  border-radius: 2px;
 }
 
 .game-reveal-cell {
   transition:
-    transform 200ms ease,
-    box-shadow 220ms ease,
-    background-color 220ms ease;
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
 }
 
 .game-reveal-cell-revealed {
-  box-shadow: 0 3px 12px rgb(245 158 11 / 16%);
+  box-shadow:
+    0 2px 0 0 rgb(245 158 11 / 0.3),
+    0 3px 12px rgb(245 158 11 / 0.16);
 }
 
 .lobby-pond::before {
@@ -110,16 +185,18 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 22% 18%, rgb(255 255 255 / 55%), transparent 35%),
-    radial-gradient(circle at 78% 70%, rgb(255 255 255 / 35%), transparent 32%);
+    radial-gradient(circle at 22% 18%, rgb(255 255 255 / 0.55), transparent 35%),
+    radial-gradient(circle at 78% 70%, rgb(255 255 255 / 0.35), transparent 32%);
   pointer-events: none;
+  z-index: var(--z-default);
 }
 
 .lobby-pond-ripple {
   position: absolute;
   border-radius: 9999px;
-  border: 1px solid rgb(14 165 233 / 28%);
+  border: 2px solid rgb(79 70 229 / 0.25);
   pointer-events: none;
+  z-index: var(--z-background);
 }
 
 .lobby-pond-ripple-a {
@@ -150,10 +227,10 @@ body {
   0%,
   100% {
     transform: scale(1);
-    opacity: 0.28;
+    opacity: 0.25;
   }
   50% {
     transform: scale(1.08);
-    opacity: 0.48;
+    opacity: 0.45;
   }
 }

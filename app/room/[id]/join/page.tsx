@@ -143,16 +143,43 @@ export default function JoinRoomPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-zinc-50 p-6">
-        <p className="mx-auto max-w-3xl text-sm text-zinc-600">載入房間中...</p>
+      <main className="min-h-screen bg-background p-6">
+        <div className="mx-auto max-w-3xl rounded-2xl border-[3px] border-primary/15 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
+          <p className="text-sm text-text-muted font-medium flex items-center gap-2">
+            <svg
+              className="animate-spin h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            載入房間中...
+          </p>
+        </div>
       </main>
     );
   }
 
   if (!roomInfo) {
     return (
-      <main className="min-h-screen bg-zinc-50 p-6">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
+      <main className="min-h-screen bg-background p-6">
+        <div
+          className="mx-auto max-w-3xl rounded-2xl border-[3px] border-error/30 bg-error/10 p-4 text-error font-medium"
+          role="alert"
+        >
           {error ?? "找不到房間。"}
         </div>
       </main>
@@ -160,33 +187,38 @@ export default function JoinRoomPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-6">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">
+    <main className="min-h-screen bg-background p-6">
+      <div className="mx-auto max-w-3xl rounded-2xl border-[3px] border-primary/15 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
+        <p className="text-xs font-bold uppercase tracking-[0.24em] text-cta font-display">
           加入房間
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-zinc-900">
+        <h1 className="mt-2 text-2xl font-bold text-text font-display">
           {roomInfo.topic}
         </h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <p className="mt-1 text-sm text-text-muted font-medium">
           題目字數：{roomInfo.wordCount}
         </p>
 
         <form className="mt-5 space-y-4" onSubmit={onSubmit}>
           <label className="block space-y-1">
-            <span className="text-sm font-medium">玩家名稱</span>
+            <span className="text-sm font-semibold">玩家名稱</span>
             <input
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2"
+              className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 text-text shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 focus:shadow-[0_3px_0_0_rgb(79_70_229/0.2)]"
               onChange={(event) => setName(event.target.value)}
               value={name}
+              type="text"
+              inputMode="text"
+              autoComplete="name"
+              aria-label="玩家名稱"
+              placeholder="請輸入您的名字"
             />
           </label>
 
           <label className="block space-y-1">
-            <span className="text-sm font-medium">頭貼（可選）</span>
+            <span className="text-sm font-semibold">頭貼（可選）</span>
             <input
               accept="image/*"
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm"
+              className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 text-sm shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 focus:shadow-[0_3px_0_0_rgb(79_70_229/0.2)] cursor-pointer file:mr-2 file:rounded-xl file:border-0 file:bg-primary/10 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-primary hover:file:bg-primary/20"
               onChange={(event) => {
                 const file = event.target.files?.[0];
                 if (!file) {
@@ -203,11 +235,12 @@ export default function JoinRoomPage() {
                 reader.readAsDataURL(file);
               }}
               type="file"
+              aria-label="上傳頭貼圖片"
             />
             {avatarUrl ? (
               <Image
                 alt="頭貼預覽"
-                className="mt-2 h-12 w-12 rounded-full border border-zinc-200 object-cover"
+                className="mt-2 h-12 w-12 rounded-full border-[3px] border-primary/20 object-cover"
                 src={avatarUrl}
                 unoptimized
                 width={48}
@@ -223,17 +256,47 @@ export default function JoinRoomPage() {
           />
 
           {error ? (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              className="rounded-2xl border-[3px] border-error/30 bg-error/10 px-4 py-3 text-sm font-medium text-error"
+              role="alert"
+            >
               {error}
             </p>
           ) : null}
 
           <button
-            className="w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
+            className="w-full rounded-2xl bg-primary text-white px-4 py-3 text-sm font-bold border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 font-display"
             disabled={submitting}
             type="submit"
+            aria-live="polite"
           >
-            {submitting ? "加入中..." : "加入遊戲"}
+            {submitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                加入中...
+              </span>
+            ) : (
+              "加入遊戲"
+            )}
           </button>
         </form>
       </div>

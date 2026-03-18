@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Serif_TC } from "next/font/google";
+import { Fredoka, Noto_Serif_TC, Nunito } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const toneSerif = Noto_Serif_TC({
@@ -31,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="zh-TW">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${toneSerif.variable} antialiased`}
+        className={`${fredoka.variable} ${nunito.variable} ${toneSerif.variable} antialiased`}
       >
         {children}
       </body>

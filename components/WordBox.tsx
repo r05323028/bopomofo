@@ -9,9 +9,9 @@ type WordBoxProps = {
 
 function cellClass(revealed: boolean): string {
   if (revealed) {
-    return "game-reveal-cell game-reveal-cell-revealed flex h-8 items-center justify-center rounded border border-zinc-300 bg-white text-zinc-900";
+    return "game-reveal-cell game-reveal-cell-revealed flex h-8 items-center justify-center rounded-lg border-[3px] border-primary/30 bg-surface text-text shadow-[0_2px_0_0_rgb(79_70_229/0.2)] transition-all duration-150";
   }
-  return "game-reveal-cell flex h-8 items-center justify-center rounded border border-zinc-200 bg-zinc-100 text-zinc-100";
+  return "game-reveal-cell flex h-8 items-center justify-center rounded-lg border-[3px] border-primary/10 bg-primary/5 text-primary/20 transition-all duration-150";
 }
 
 export function WordBox({
@@ -21,7 +21,7 @@ export function WordBox({
   showOnlyTone = false,
 }: Readonly<WordBoxProps>) {
   return (
-    <div className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+    <div className="space-y-3 rounded-2xl border-[3px] border-primary/20 bg-surface p-4 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
       {answer.map((row, index) => {
         const toneKey = row.tone ?? "1";
         const topToneVisible =
@@ -46,7 +46,7 @@ export function WordBox({
             className="grid grid-cols-[1fr_7rem] gap-3"
             key={`${row.character}-${index}`}
           >
-            <div className="flex h-24 items-center justify-center rounded-lg border border-zinc-300 bg-white text-3xl font-bold text-zinc-900">
+            <div className="flex h-24 items-center justify-center rounded-2xl border-[3px] border-primary/30 bg-surface text-3xl font-bold text-text shadow-[0_4px_0_0_rgb(79_70_229/0.2)]">
               {showOnlyTone && !fullyRevealed ? "?" : row.character}
             </div>
 

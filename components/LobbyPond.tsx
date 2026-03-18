@@ -45,13 +45,13 @@ function positionFor(index: number, total: number): { x: number; y: number } {
 
 export function LobbyPond({ players }: Readonly<LobbyPondProps>) {
   return (
-    <div className="lobby-pond relative mt-4 h-72 overflow-hidden rounded-3xl border border-cyan-200/70 bg-gradient-to-br from-cyan-100 via-sky-100 to-emerald-100 p-4">
+    <div className="lobby-pond relative mt-4 h-72 overflow-hidden rounded-3xl border-[3px] border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 p-4 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
       <div className="lobby-pond-ripple lobby-pond-ripple-a" />
       <div className="lobby-pond-ripple lobby-pond-ripple-b" />
       <div className="lobby-pond-ripple lobby-pond-ripple-c" />
 
       {players.length === 0 ? (
-        <div className="relative z-10 flex h-full items-center justify-center rounded-2xl border border-dashed border-cyan-300/70 bg-white/35 text-sm font-semibold text-cyan-800">
+        <div className="relative z-10 flex h-full items-center justify-center rounded-2xl border-[2px] border-dashed border-primary/30 bg-surface/40 text-sm font-bold text-primary font-display">
           等待玩家加入池塘...
         </div>
       ) : null}
@@ -99,25 +99,25 @@ export function LobbyPond({ players }: Readonly<LobbyPondProps>) {
             }}
           >
             <motion.div
-              className="rounded-2xl border border-white/75 bg-white/72 px-3 py-2 shadow-lg backdrop-blur-sm"
-              whileHover={{ scale: 1.06, y: -2 }}
+              className="rounded-2xl border-[3px] border-primary/30 bg-surface/90 px-3 py-2 shadow-[0_3px_0_0_rgb(79_70_229/0.2)] backdrop-blur-sm cursor-pointer transition-all duration-150"
+              whileTap={{ scale: 0.95, y: 2 }}
             >
               <div className="flex items-center gap-2">
                 {player.avatarUrl ? (
                   <Image
                     alt={`${player.displayName} 頭貼`}
-                    className="h-11 w-11 rounded-full border-2 border-cyan-200 object-cover"
+                    className="h-11 w-11 rounded-full border-[3px] border-primary/20 object-cover"
                     src={player.avatarUrl}
                     unoptimized
                     width={44}
                     height={44}
                   />
                 ) : (
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-cyan-200 bg-cyan-50 text-sm font-bold text-cyan-700">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-primary/20 bg-primary/10 text-sm font-bold text-primary font-display">
                     ？
                   </span>
                 )}
-                <span className="max-w-36 truncate text-base font-extrabold text-zinc-900">
+                <span className="max-w-36 truncate text-base font-extrabold text-text font-display">
                   {player.displayName}
                 </span>
               </div>

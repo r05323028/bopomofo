@@ -39,9 +39,35 @@ export default function PlayPage() {
 
   if (!roomState) {
     return (
-      <main className="min-h-screen bg-zinc-50 p-6">
-        <p className="text-sm text-zinc-600">載入房間中...</p>
-        {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+      <main className="min-h-screen bg-background p-6">
+        <div className="flex items-center gap-2 text-sm text-text-muted">
+          <svg
+            className="animate-spin h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          載入房間中...
+        </div>
+        {error ? (
+          <p className="mt-2 text-sm text-error" role="alert">
+            {error}
+          </p>
+        ) : null}
       </main>
     );
   }
@@ -54,26 +80,29 @@ export default function PlayPage() {
 
   if (!me) {
     return (
-      <main className="min-h-screen bg-zinc-50 p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          玩家識別無效，請重新加入房間。
+      <main className="min-h-screen bg-background p-6">
+        <div
+          className="rounded-2xl border-[3px] border-error/20 bg-error/10 p-4 text-sm text-error shadow-[0_2px_0_0_rgb(239_68_68/0.1)]"
+          role="alert"
+        >
+          玩家識別無效,請重新加入房間。
         </div>
       </main>
     );
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-zinc-50 p-6">
+    <main className="relative min-h-screen overflow-hidden bg-background p-6">
       <PixiGameBackground intensity="high" />
       <div className="relative z-10 mx-auto max-w-3xl space-y-4">
-        <header className="rounded-2xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">
+        <header className="rounded-2xl border-[3px] border-primary/20 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
+          <p className="font-display text-xs font-semibold uppercase tracking-[0.24em] text-text-muted">
             玩家畫面
           </p>
-          <h1 className="mt-2 text-2xl font-bold text-zinc-900">
+          <h1 className="font-display mt-2 text-2xl font-bold text-text">
             {roomState.topic}
           </h1>
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-text-muted">
             {roomState.phase === "in-game"
               ? isMyTurn
                 ? "輪到你"
@@ -89,37 +118,40 @@ export default function PlayPage() {
         </header>
 
         {me.isEliminated ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div
+            className="rounded-2xl border-[3px] border-error/20 bg-error/10 p-4 text-sm text-error shadow-[0_2px_0_0_rgb(239_68_68/0.1)]"
+            role="alert"
+          >
             你已被淘汰。
           </div>
         ) : null}
 
         {roomState.phase === "in-game" && isMyTurn && !me.isEliminated ? (
-          <section className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4">
+          <section className="space-y-4 rounded-2xl border-[3px] border-primary/20 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
             <div className="flex gap-2">
               <motion.button
-                className={`rounded-lg px-3 py-2 text-sm font-semibold ${
+                className={`cursor-pointer rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-150 ease-out ${
                   mode === "component"
-                    ? "bg-zinc-900 text-white"
-                    : "bg-zinc-100 text-zinc-700"
-                } transition hover:-translate-y-0.5 hover:shadow-sm`}
+                    ? "bg-primary text-white border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
+                    : "bg-surface text-text border-[3px] border-primary/20 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px]"
+                } focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2`}
                 onClick={() => setMode("component")}
                 type="button"
-                whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
+                aria-label="切換到猜注音符號模式"
               >
                 猜注音符號
               </motion.button>
               <motion.button
-                className={`rounded-lg px-3 py-2 text-sm font-semibold ${
+                className={`cursor-pointer rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-150 ease-out ${
                   mode === "answer"
-                    ? "bg-zinc-900 text-white"
-                    : "bg-zinc-100 text-zinc-700"
-                } transition hover:-translate-y-0.5 hover:shadow-sm`}
+                    ? "bg-primary text-white border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
+                    : "bg-surface text-text border-[3px] border-primary/20 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px]"
+                } focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2`}
                 onClick={() => setMode("answer")}
                 type="button"
-                whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
+                aria-label="切換到猜完整答案模式"
               >
                 猜完整答案
               </motion.button>
@@ -138,11 +170,11 @@ export default function PlayPage() {
 
                   return (
                     <motion.button
-                      className={`rounded-lg border px-2 py-2 text-sm font-semibold ${
+                      className={`rounded-2xl border-[3px] px-2 py-2 text-sm font-semibold transition-all duration-150 ease-out ${
                         disabled
-                          ? "border-zinc-200 bg-zinc-100 text-zinc-400"
-                          : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50"
-                      } transition ${disabled ? "" : "hover:-translate-y-0.5 hover:shadow-sm"}`}
+                          ? "border-primary/10 bg-primary/5 text-text-muted cursor-not-allowed"
+                          : "cursor-pointer border-primary/30 bg-surface text-text shadow-[0_2px_0_0_rgb(79_70_229/0.2)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.2)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px] focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
+                      }`}
                       disabled={disabled}
                       key={symbol}
                       onClick={() => {
@@ -152,8 +184,8 @@ export default function PlayPage() {
                         });
                       }}
                       type="button"
-                      whileHover={disabled ? undefined : { y: -2, scale: 1.02 }}
                       whileTap={disabled ? undefined : { scale: 0.97 }}
+                      aria-label={`猜注音符號 ${display}`}
                     >
                       {isToneSymbol ? (
                         <span className="tone-glyph">{display}</span>
@@ -178,12 +210,15 @@ export default function PlayPage() {
                 }}
               >
                 <label className="block space-y-1">
-                  <span className="text-sm font-medium">目標玩家</span>
+                  <span className="text-sm font-semibold text-text">
+                    目標玩家
+                  </span>
                   <select
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2"
+                    className="w-full cursor-pointer rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
                     onChange={(event) => setTargetId(event.target.value)}
                     required
                     value={targetId}
+                    aria-label="選擇目標玩家"
                   >
                     <option value="">選擇目標</option>
                     {targets.map((target) => (
@@ -195,18 +230,24 @@ export default function PlayPage() {
                 </label>
 
                 <label className="block space-y-1">
-                  <span className="text-sm font-medium">答案猜測</span>
+                  <span className="text-sm font-semibold text-text">
+                    答案猜測
+                  </span>
                   <input
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2"
+                    className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
                     onChange={(event) => setGuessWord(event.target.value)}
                     required
                     value={guessWord}
+                    inputMode="text"
+                    autoComplete="off"
+                    aria-label="輸入答案猜測"
                   />
                 </label>
 
                 <button
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
+                  className="cursor-pointer rounded-2xl bg-cta text-white px-4 py-3 text-sm font-bold border-[3px] border-cta shadow-[0_4px_0_0_rgb(249_115_22/0.8)] hover:shadow-[0_2px_0_0_rgb(249_115_22/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   type="submit"
+                  aria-label="送出答案猜測"
                 >
                   送出答案猜測
                 </button>
@@ -216,8 +257,8 @@ export default function PlayPage() {
         ) : null}
 
         {roomState.phase === "game-over" ? (
-          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
-            勝利者：
+          <section className="rounded-2xl border-[3px] border-success/20 bg-success/10 p-6 text-success shadow-[0_2px_0_0_rgb(16_185_129/0.1)]">
+            <span className="font-bold">勝利者：</span>
             {
               roomState.players.find(
                 (player) => player.id === roomState.winnerId,
@@ -227,7 +268,10 @@ export default function PlayPage() {
         ) : null}
 
         {error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div
+            className="rounded-2xl border-[3px] border-error/20 bg-error/10 p-4 text-sm text-error shadow-[0_2px_0_0_rgb(239_68_68/0.1)]"
+            role="alert"
+          >
             {error}
           </div>
         ) : null}
