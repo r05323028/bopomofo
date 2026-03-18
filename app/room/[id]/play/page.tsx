@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
+import { PixiGameBackground } from "@/components/PixiGameBackground";
 import { allGuessableSymbols } from "@/lib/game/constants";
 import { getSocket } from "@/lib/socket";
 import { useRoomState } from "@/lib/useRoomState";
@@ -63,8 +63,9 @@ export default function PlayPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
+    <main className="relative min-h-screen overflow-hidden bg-zinc-50 p-6">
+      <PixiGameBackground intensity="high" />
+      <div className="relative z-10 mx-auto max-w-3xl space-y-4">
         <header className="rounded-2xl border border-zinc-200 bg-white p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">
             玩家畫面

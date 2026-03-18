@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
+import { PixiGameBackground } from "@/components/PixiGameBackground";
 import { QRInvite } from "@/components/QRInvite";
 import { WordBox } from "@/components/WordBox";
 import type { HostRoomState } from "@/lib/game/types";
@@ -117,8 +117,9 @@ export default function HostRoomPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-6">
-      <div className="mx-auto max-w-6xl space-y-4">
+    <main className="relative min-h-screen overflow-hidden bg-zinc-50 p-6">
+      <PixiGameBackground intensity="medium" />
+      <div className="relative z-10 mx-auto max-w-6xl space-y-4">
         <header className="rounded-2xl border border-zinc-200 bg-white p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">
             房主畫面
