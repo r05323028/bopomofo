@@ -139,25 +139,31 @@ export default function HostRoomPage() {
               <ul className="mt-3 space-y-2">
                 {roomState.players.map((player) => (
                   <li
-                    className="flex items-center justify-between rounded-lg border border-zinc-200 px-3 py-2"
+                    className={`flex items-center justify-between rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 shadow-xs transition ${
+                      roomState.activePlayerId === player.id
+                        ? "border-amber-400 bg-amber-50 ring-4 ring-amber-300/40 animate-pulse"
+                        : ""
+                    }`}
                     key={player.id}
                   >
-                    <span className="flex items-center gap-2 font-medium text-zinc-900">
+                    <span className="flex items-center gap-3 text-zinc-900">
                       {player.avatarUrl ? (
                         <Image
                           alt={`${player.displayName} 頭貼`}
-                          className="h-6 w-6 rounded-full border border-zinc-200 object-cover"
+                          className="h-10 w-10 rounded-full border-2 border-zinc-300 object-cover ring-2 ring-white"
                           src={player.avatarUrl}
                           unoptimized
-                          width={24}
-                          height={24}
+                          width={40}
+                          height={40}
                         />
                       ) : (
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs text-zinc-600">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-300 text-sm font-bold text-zinc-700 ring-2 ring-white">
                           ？
                         </span>
                       )}
-                      {player.displayName}
+                      <span className="text-base font-bold tracking-wide">
+                        {player.displayName}
+                      </span>
                     </span>
                     <span
                       className={`text-xs font-semibold ${
@@ -166,7 +172,11 @@ export default function HostRoomPage() {
                           : "text-zinc-500"
                       }`}
                     >
-                      {player.hasSubmitted ? "已送出" : "等待中"}
+                      {roomState.activePlayerId === player.id
+                        ? "目前玩家"
+                        : player.hasSubmitted
+                          ? "已送出"
+                          : "等待中"}
                     </span>
                   </li>
                 ))}
@@ -215,7 +225,11 @@ export default function HostRoomPage() {
             <div className="grid gap-4 md:grid-cols-2">
               {roomState.players.map((player) => (
                 <article
-                  className="rounded-2xl border border-zinc-200 bg-zinc-50 p-3"
+                  className={`rounded-2xl border border-zinc-200 bg-zinc-50 p-3 transition ${
+                    roomState.activePlayerId === player.id
+                      ? "border-amber-400 bg-amber-50 ring-4 ring-amber-300/40 animate-pulse"
+                      : ""
+                  }`}
                   key={player.id}
                 >
                   <div className="mb-2 flex items-center justify-between">
@@ -249,7 +263,9 @@ export default function HostRoomPage() {
                       hostState?.reveal.playerWordRevealed[player.id],
                     )}
                     guessedComponents={guessed}
-                    showOnlyTone={!player.isEliminated}
+                    showOnlyTone={
+                      roomState.phase === "in-game" && !player.isEliminated
+                    }
                   />
                 </article>
               ))}

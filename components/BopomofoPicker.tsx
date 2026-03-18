@@ -37,6 +37,7 @@ export function BopomofoPicker({
 
   const symbols = byType[type];
   const showClear = true;
+  const isTonePicker = type === "top-tone" || type === "right-tone";
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
@@ -74,7 +75,11 @@ export function BopomofoPicker({
               }}
               type="button"
             >
-              {symbol}
+              {isTonePicker ? (
+                <span className="tone-glyph">{symbol}</span>
+              ) : (
+                symbol
+              )}
             </button>
           ))}
 

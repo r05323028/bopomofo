@@ -24,3 +24,33 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
 }
+
+.tone-glyph {
+  font-family: var(--font-tone-serif), "Noto Serif TC", "PingFang TC", serif;
+  font-weight: 900;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #b45309;
+}
+
+.active-player-highlight {
+  border-color: #f59e0b;
+  box-shadow:
+    0 0 0 1px #f59e0b,
+    0 0 0 4px rgb(251 191 36 / 22%);
+  animation: active-player-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes active-player-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px #f59e0b,
+      0 0 0 4px rgb(251 191 36 / 18%);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px #f59e0b,
+      0 0 0 7px rgb(251 191 36 / 32%);
+  }
+}

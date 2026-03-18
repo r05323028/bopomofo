@@ -29,14 +29,17 @@ export function WordBox({
         const rightToneVisible =
           fullyRevealed || guessedComponents.has(toneKey);
         const initialVisible =
-          (showOnlyTone ? false : fullyRevealed) ||
-          (row.initial ? guessedComponents.has(row.initial) : false);
+          fullyRevealed ||
+          (!showOnlyTone &&
+            (row.initial ? guessedComponents.has(row.initial) : false));
         const medialVisible =
-          (showOnlyTone ? false : fullyRevealed) ||
-          (row.medial ? guessedComponents.has(row.medial) : false);
+          fullyRevealed ||
+          (!showOnlyTone &&
+            (row.medial ? guessedComponents.has(row.medial) : false));
         const finVisible =
-          (showOnlyTone ? false : fullyRevealed) ||
-          (row.final ? guessedComponents.has(row.final) : false);
+          fullyRevealed ||
+          (!showOnlyTone &&
+            (row.final ? guessedComponents.has(row.final) : false));
 
         return (
           <div
@@ -44,12 +47,16 @@ export function WordBox({
             key={`${row.character}-${index}`}
           >
             <div className="flex h-24 items-center justify-center rounded-lg border border-zinc-300 bg-white text-3xl font-bold text-zinc-900">
-              {showOnlyTone ? "?" : row.character}
+              {showOnlyTone && !fullyRevealed ? "?" : row.character}
             </div>
 
             <div className="grid grid-rows-[2rem_2rem_2rem_2rem] gap-1">
               <div className={cellClass(topToneVisible)}>
-                {topToneVisible ? (row.topTone ?? "") : "·"}
+                {topToneVisible ? (
+                  <span className="tone-glyph">{row.topTone ?? ""}</span>
+                ) : (
+                  "·"
+                )}
               </div>
               <div className={cellClass(initialVisible)}>
                 {initialVisible ? row.initial : "·"}
@@ -59,7 +66,11 @@ export function WordBox({
                   {medialVisible ? row.medial : "·"}
                 </div>
                 <div className={cellClass(rightToneVisible)}>
-                  {rightToneVisible ? (row.tone ?? "") : "·"}
+                  {rightToneVisible ? (
+                    <span className="tone-glyph">{row.tone ?? ""}</span>
+                  ) : (
+                    "·"
+                  )}
                 </div>
               </div>
               <div className={cellClass(finVisible)}>

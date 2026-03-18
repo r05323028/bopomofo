@@ -88,7 +88,11 @@ export function WordInput({
               }
               type="button"
             >
-              {row.topTone ?? "上調"}
+              {row.topTone ? (
+                <span className="tone-glyph">{row.topTone}</span>
+              ) : (
+                "上調"
+              )}
             </button>
             <button
               className="rounded border border-zinc-300 bg-white text-sm text-zinc-900"
@@ -116,7 +120,11 @@ export function WordInput({
                 }
                 type="button"
               >
-                {row.tone ?? "右調"}
+                {row.tone ? (
+                  <span className="tone-glyph">{row.tone}</span>
+                ) : (
+                  "右調"
+                )}
               </button>
             </div>
             <button

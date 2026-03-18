@@ -122,6 +122,11 @@ export default function PlayPage() {
             {mode === "component" ? (
               <div className="grid grid-cols-7 gap-2 sm:grid-cols-9">
                 {allGuessableSymbols.map((symbol) => {
+                  const isToneSymbol =
+                    symbol === "ˊ" ||
+                    symbol === "ˇ" ||
+                    symbol === "ˋ" ||
+                    symbol === "˙";
                   const display = symbol === "1" ? "一聲" : symbol;
                   const disabled = guessed.has(symbol);
 
@@ -142,7 +147,11 @@ export default function PlayPage() {
                       }}
                       type="button"
                     >
-                      {display}
+                      {isToneSymbol ? (
+                        <span className="tone-glyph">{display}</span>
+                      ) : (
+                        display
+                      )}
                     </button>
                   );
                 })}
