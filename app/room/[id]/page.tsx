@@ -255,9 +255,8 @@ export default function HostRoomPage() {
                         hostState?.reveal.playerWordRevealed[player.id],
                       )}
                       guessedComponents={guessed}
-                      showOnlyTone={
-                        roomState.phase === "in-game" && !player.isEliminated
-                      }
+                      showOnlyTone={false}
+                      maskCharacter={roomState.phase !== "game-over"}
                     />
                   </motion.article>
                 ))}
