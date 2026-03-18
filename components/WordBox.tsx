@@ -9,9 +9,9 @@ type WordBoxProps = {
 
 function cellClass(revealed: boolean): string {
   if (revealed) {
-    return "flex h-8 items-center justify-center rounded border border-zinc-300 bg-white text-zinc-900";
+    return "game-reveal-cell game-reveal-cell-revealed flex h-8 items-center justify-center rounded border border-zinc-300 bg-white text-zinc-900";
   }
-  return "flex h-8 items-center justify-center rounded border border-zinc-200 bg-zinc-100 text-zinc-100";
+  return "game-reveal-cell flex h-8 items-center justify-center rounded border border-zinc-200 bg-zinc-100 text-zinc-100";
 }
 
 export function WordBox({

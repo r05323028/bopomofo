@@ -139,14 +139,20 @@ export default function HostRoomPage() {
               <ul className="mt-3 space-y-2">
                 {roomState.players.map((player) => (
                   <li
-                    className={`flex items-center justify-between rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 shadow-xs transition ${
+                    className={`game-player-card flex items-center justify-between rounded-xl px-4 py-3 transition ${
                       roomState.activePlayerId === player.id
-                        ? "border-amber-400 bg-amber-50 ring-4 ring-amber-300/40 animate-pulse"
+                        ? "game-player-card-active"
                         : ""
                     }`}
                     key={player.id}
                   >
-                    <span className="flex items-center gap-3 text-zinc-900">
+                    <span
+                      className={`flex items-center gap-3 text-zinc-900 ${
+                        roomState.activePlayerId === player.id
+                          ? "game-active-name"
+                          : ""
+                      }`}
+                    >
                       {player.avatarUrl ? (
                         <Image
                           alt={`${player.displayName} 頭貼`}
@@ -166,10 +172,12 @@ export default function HostRoomPage() {
                       </span>
                     </span>
                     <span
-                      className={`text-xs font-semibold ${
-                        player.hasSubmitted
-                          ? "text-emerald-700"
-                          : "text-zinc-500"
+                      className={`game-badge-soft rounded-full px-2.5 py-1 text-xs font-bold tracking-wide ${
+                        roomState.activePlayerId === player.id
+                          ? "game-badge-active"
+                          : player.hasSubmitted
+                            ? "border border-emerald-300 bg-emerald-50 text-emerald-700"
+                            : "border border-zinc-300 bg-white text-zinc-500"
                       }`}
                     >
                       {roomState.activePlayerId === player.id
@@ -207,7 +215,7 @@ export default function HostRoomPage() {
           <section className="rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <h2 className="text-lg font-semibold text-zinc-900">遊戲看板</h2>
-              <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
+              <span className="game-turn-chip rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
                 目前回合：
                 {roomState.players.find(
                   (p) => p.id === roomState.activePlayerId,
@@ -225,9 +233,9 @@ export default function HostRoomPage() {
             <div className="grid gap-4 md:grid-cols-2">
               {roomState.players.map((player) => (
                 <article
-                  className={`rounded-2xl border border-zinc-200 bg-zinc-50 p-3 transition ${
+                  className={`game-player-card rounded-2xl p-3 transition ${
                     roomState.activePlayerId === player.id
-                      ? "border-amber-400 bg-amber-50 ring-4 ring-amber-300/40 animate-pulse"
+                      ? "game-player-card-active"
                       : ""
                   }`}
                   key={player.id}

@@ -41,6 +41,155 @@ body {
   animation: active-player-pulse 1.5s ease-in-out infinite;
 }
 
+.game-player-card {
+  background: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%);
+  border: 1px solid #d4d4d8;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
+  transition:
+    transform 220ms ease,
+    box-shadow 260ms ease,
+    border-color 220ms ease,
+    background 260ms ease;
+  animation: game-card-enter 360ms ease both;
+}
+
+.game-player-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 10%);
+}
+
+.game-player-card-active {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #f59e0b;
+  box-shadow:
+    0 0 0 1px #f59e0b,
+    0 0 0 5px rgb(251 191 36 / 25%),
+    0 8px 20px rgb(245 158 11 / 25%);
+  animation: game-active-pulse 1.15s ease-in-out infinite;
+}
+
+.game-badge-active {
+  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+  color: #fff;
+  border: 1px solid #d97706;
+  box-shadow: 0 3px 10px rgb(245 158 11 / 35%);
+  animation: game-badge-breathe 1200ms ease-in-out infinite;
+}
+
+.game-badge-soft {
+  transition: transform 180ms ease;
+}
+
+.game-badge-soft:hover {
+  transform: translateY(-1px);
+}
+
+.game-active-name {
+  position: relative;
+}
+
+.game-active-name::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+  transform-origin: left;
+  animation: game-name-sweep 1200ms ease-in-out infinite;
+}
+
+.game-reveal-cell {
+  transition:
+    transform 200ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.game-reveal-cell-revealed {
+  animation: game-cell-flip 320ms ease;
+  box-shadow: 0 3px 12px rgb(245 158 11 / 16%);
+}
+
+.game-turn-chip {
+  animation: game-chip-pulse 1100ms ease-in-out infinite;
+}
+
+@keyframes game-active-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 1px #f59e0b,
+      0 0 0 5px rgb(251 191 36 / 25%),
+      0 8px 20px rgb(245 158 11 / 25%);
+  }
+  50% {
+    transform: scale(1.01);
+    box-shadow:
+      0 0 0 1px #f59e0b,
+      0 0 0 8px rgb(251 191 36 / 35%),
+      0 12px 24px rgb(245 158 11 / 35%);
+  }
+}
+
+@keyframes game-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes game-badge-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 3px 10px rgb(245 158 11 / 30%);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 6px 14px rgb(245 158 11 / 42%);
+  }
+}
+
+@keyframes game-name-sweep {
+  0%,
+  100% {
+    transform: scaleX(0.45);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes game-cell-flip {
+  0% {
+    transform: rotateX(22deg) scale(0.98);
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotateX(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes game-chip-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
 @keyframes active-player-pulse {
   0%,
   100% {

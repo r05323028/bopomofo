@@ -100,7 +100,7 @@ export default function PlayPage() {
                   mode === "component"
                     ? "bg-zinc-900 text-white"
                     : "bg-zinc-100 text-zinc-700"
-                }`}
+                } transition hover:-translate-y-0.5 hover:shadow-sm`}
                 onClick={() => setMode("component")}
                 type="button"
               >
@@ -111,7 +111,7 @@ export default function PlayPage() {
                   mode === "answer"
                     ? "bg-zinc-900 text-white"
                     : "bg-zinc-100 text-zinc-700"
-                }`}
+                } transition hover:-translate-y-0.5 hover:shadow-sm`}
                 onClick={() => setMode("answer")}
                 type="button"
               >
@@ -136,7 +136,7 @@ export default function PlayPage() {
                         disabled
                           ? "border-zinc-200 bg-zinc-100 text-zinc-400"
                           : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50"
-                      }`}
+                      } transition ${disabled ? "" : "hover:-translate-y-0.5 hover:shadow-sm"}`}
                       disabled={disabled}
                       key={symbol}
                       onClick={() => {
