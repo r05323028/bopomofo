@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { LobbyPond } from "@/components/LobbyPond";
 import { PixiGameBackground } from "@/components/PixiGameBackground";
 import { QRInvite } from "@/components/QRInvite";
 import { WordBox } from "@/components/WordBox";
@@ -138,93 +139,13 @@ export default function HostRoomPage() {
               <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
                 玩家（{roomState.players.length}）
               </h2>
-              <ul className="mt-3 space-y-2">
-                <AnimatePresence initial={false}>
-                  {roomState.players.map((player) => (
-                    <motion.li
-                      className={`game-player-card flex items-center justify-between rounded-xl px-4 py-3 transition ${
-                        roomState.activePlayerId === player.id
-                          ? "game-player-card-active"
-                          : ""
-                      }`}
-                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                      animate={{
-                        opacity: 1,
-                        y: 0,
-                        scale:
-                          roomState.activePlayerId === player.id ? 1.015 : 1,
-                      }}
-                      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 320,
-                        damping: 22,
-                      }}
-                      whileHover={{ y: -2 }}
-                      key={player.id}
-                    >
-                      <span
-                        className={`flex items-center gap-3 text-zinc-900 ${
-                          roomState.activePlayerId === player.id
-                            ? "game-active-name"
-                            : ""
-                        }`}
-                      >
-                        {player.avatarUrl ? (
-                          <Image
-                            alt={`${player.displayName} 頭貼`}
-                            className="h-10 w-10 rounded-full border-2 border-zinc-300 object-cover ring-2 ring-white"
-                            src={player.avatarUrl}
-                            unoptimized
-                            width={40}
-                            height={40}
-                          />
-                        ) : (
-                          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-300 text-sm font-bold text-zinc-700 ring-2 ring-white">
-                            ？
-                          </span>
-                        )}
-                        <span className="text-base font-bold tracking-wide">
-                          {player.displayName}
-                        </span>
-                      </span>
-                      <motion.span
-                        className={`game-badge-soft rounded-full px-2.5 py-1 text-xs font-bold tracking-wide ${
-                          roomState.activePlayerId === player.id
-                            ? "game-badge-active"
-                            : player.hasSubmitted
-                              ? "border border-emerald-300 bg-emerald-50 text-emerald-700"
-                              : "border border-zinc-300 bg-white text-zinc-500"
-                        }`}
-                        animate={
-                          roomState.activePlayerId === player.id
-                            ? {
-                                scale: [1, 1.08, 1],
-                                boxShadow: [
-                                  "0 3px 10px rgb(245 158 11 / 35%)",
-                                  "0 6px 14px rgb(245 158 11 / 55%)",
-                                  "0 3px 10px rgb(245 158 11 / 35%)",
-                                ],
-                              }
-                            : undefined
-                        }
-                        transition={{
-                          duration: 1.1,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        {roomState.activePlayerId === player.id
-                          ? "目前玩家"
-                          : player.hasSubmitted
-                            ? "已送出"
-                            : "等待中"}
-                      </motion.span>
-                    </motion.li>
-                  ))}
-                </AnimatePresence>
-              </ul>
-
+              <LobbyPond
+                players={roomState.players.map((player) => ({
+                  id: player.id,
+                  displayName: player.displayName,
+                  avatarUrl: player.avatarUrl,
+                }))}
+              />
               <button
                 className="mt-4 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
                 disabled={!allSubmitted}

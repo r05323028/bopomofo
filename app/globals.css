@@ -104,3 +104,56 @@ body {
 .game-reveal-cell-revealed {
   box-shadow: 0 3px 12px rgb(245 158 11 / 16%);
 }
+
+.lobby-pond::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 18%, rgb(255 255 255 / 55%), transparent 35%),
+    radial-gradient(circle at 78% 70%, rgb(255 255 255 / 35%), transparent 32%);
+  pointer-events: none;
+}
+
+.lobby-pond-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid rgb(14 165 233 / 28%);
+  pointer-events: none;
+}
+
+.lobby-pond-ripple-a {
+  width: 240px;
+  height: 240px;
+  left: -40px;
+  top: -70px;
+  animation: pond-ripple 8s ease-in-out infinite;
+}
+
+.lobby-pond-ripple-b {
+  width: 190px;
+  height: 190px;
+  right: -50px;
+  top: 40px;
+  animation: pond-ripple 7s ease-in-out infinite 0.9s;
+}
+
+.lobby-pond-ripple-c {
+  width: 210px;
+  height: 210px;
+  left: 35%;
+  bottom: -110px;
+  animation: pond-ripple 9s ease-in-out infinite 0.35s;
+}
+
+@keyframes pond-ripple {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.48;
+  }
+}
