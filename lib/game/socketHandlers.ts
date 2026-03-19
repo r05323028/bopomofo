@@ -12,6 +12,10 @@ type StartGamePayload = {
   roomId: string;
 };
 
+type EndGamePayload = {
+  roomId: string;
+};
+
 type ComponentGuessPayload = {
   roomId: string;
   symbol: string;
@@ -98,6 +102,38 @@ export function registerSocketHandlers(io: Server): void {
         emitError(
           socket,
           error instanceof Error ? error.message : "開始遊戲失敗。",
+        );
+      }
+    });
+
+    socket.on("end-game", (payload: EndGamePayload) => {
+      try {
+        const room = gameRoomManager.getRoom(payload.roomId);
+        if (!room) {
+          emitError(socket, "找不到房間。");
+          return;
+        }
+
+        if (!socket.data.isHost || socket.data.roomId !== payload.roomId) {
+          emitError(socket, "只有房主可以結束遊戲。");
+          return;
+        }
+
+        if (room.phase !== "in-game") {
+          emitError(socket, "目前不在遊戲進行中。");
+          return;
+        }
+
+        gameRoomManager.endGameByHost(payload.roomId);
+        const finalRoom = gameRoomManager.getRoom(payload.roomId);
+        io.to(payload.roomId).emit("game-over", {
+          winnerId: null,
+          allWords: finalRoom?.answers ?? {},
+        });
+      } catch (error) {
+        emitError(
+          socket,
+          error instanceof Error ? error.message : "結束遊戲失敗。",
         );
       }
     });

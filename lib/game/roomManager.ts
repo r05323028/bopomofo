@@ -310,6 +310,16 @@ class GameRoomManager {
     return room.winnerId;
   }
 
+  endGameByHost(roomId: string): void {
+    const room = this.requireRoom(roomId);
+    room.phase = "game-over";
+    room.winnerId = null;
+    room.activePlayerId = null;
+    for (const player of room.players) {
+      room.reveal.playerWordRevealed[player.id] = true;
+    }
+  }
+
   cleanupExpiredRooms(now = Date.now()): void {
     for (const [roomId, room] of this.rooms.entries()) {
       if (now - room.createdAt > roomTtlMs) {

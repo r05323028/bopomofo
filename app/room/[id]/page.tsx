@@ -98,6 +98,16 @@ export default function HostRoomPage() {
     socket.emit("start-game", { roomId });
   };
 
+  const endGame = () => {
+    if (!hostId) {
+      setLocalError("找不到房主識別，請重新建立房間。");
+      return;
+    }
+
+    setLocalError(null);
+    socket.emit("end-game", { roomId });
+  };
+
   if (!roomState) {
     return (
       <main className="min-h-screen bg-background p-6">
@@ -201,7 +211,35 @@ export default function HostRoomPage() {
                     ?.displayName ?? "-"}
                 </span>
               ) : null}
+              {roomState.phase === "game-over" ? (
+                <a
+                  className="ml-auto inline-flex items-center rounded-2xl bg-primary text-white px-4 py-2 text-sm font-bold border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
+                  href="/"
+                  aria-label="再來一局，返回建立房間"
+                >
+                  再來一局
+                </a>
+              ) : null}
+              {roomState.phase === "in-game" ? (
+                <button
+                  className="ml-auto rounded-2xl bg-error text-white px-4 py-2 text-sm font-bold border-[3px] border-error shadow-[0_4px_0_0_rgb(239_68_68/0.75)] hover:shadow-[0_2px_0_0_rgb(239_68_68/0.75)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
+                  onClick={endGame}
+                  type="button"
+                  aria-label="結束遊戲"
+                >
+                  結束遊戲
+                </button>
+              ) : null}
             </div>
+
+            {localError ? (
+              <p className="mb-3 text-sm text-error font-medium">
+                {localError}
+              </p>
+            ) : null}
+            {error ? (
+              <p className="mb-3 text-sm text-error font-medium">{error}</p>
+            ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
               <AnimatePresence initial={false}>
