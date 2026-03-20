@@ -63,17 +63,19 @@ class GameRoomManager {
             reveal: room.reveal,
         };
     }
-    getPlayerRoomState(roomId) {
+    getPlayerRoomState(roomId, playerId) {
         const room = this.getRoom(roomId);
         if (!room) {
             return null;
         }
+        const ownAnswer = playerId ? (room.answers[playerId] ?? []) : [];
         return {
             id: room.id,
             topic: room.topic,
             wordCount: room.wordCount,
             phase: room.phase,
             players: room.players,
+            ownAnswer,
             turnOrder: room.turnOrder,
             activePlayerId: room.activePlayerId,
             winnerId: room.winnerId,
@@ -82,11 +84,11 @@ class GameRoomManager {
             },
         };
     }
-    getPublicRoomState(roomId, asHost = false) {
+    getPublicRoomState(roomId, asHost = false, playerId) {
         if (asHost) {
             return this.getHostRoomState(roomId);
         }
-        return this.getPlayerRoomState(roomId);
+        return this.getPlayerRoomState(roomId, playerId);
     }
     addPlayer(input) {
         const room = this.requireRoom(input.roomId);
@@ -222,6 +224,15 @@ class GameRoomManager {
             room.reveal.playerWordRevealed[player.id] = true;
         }
         return room.winnerId;
+    }
+    endGameByHost(roomId) {
+        const room = this.requireRoom(roomId);
+        room.phase = "game-over";
+        room.winnerId = null;
+        room.activePlayerId = null;
+        for (const player of room.players) {
+            room.reveal.playerWordRevealed[player.id] = true;
+        }
     }
     cleanupExpiredRooms(now = Date.now()) {
         for (const [roomId, room] of this.rooms.entries()) {

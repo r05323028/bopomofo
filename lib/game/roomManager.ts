@@ -104,11 +104,16 @@ class GameRoomManager {
     };
   }
 
-  getPlayerRoomState(roomId: string): PlayerRoomState | null {
+  getPlayerRoomState(
+    roomId: string,
+    playerId?: string,
+  ): PlayerRoomState | null {
     const room = this.getRoom(roomId);
     if (!room) {
       return null;
     }
+
+    const ownAnswer = playerId ? (room.answers[playerId] ?? []) : [];
 
     return {
       id: room.id,
@@ -116,6 +121,7 @@ class GameRoomManager {
       wordCount: room.wordCount,
       phase: room.phase,
       players: room.players,
+      ownAnswer,
       turnOrder: room.turnOrder,
       activePlayerId: room.activePlayerId,
       winnerId: room.winnerId,
@@ -125,11 +131,15 @@ class GameRoomManager {
     };
   }
 
-  getPublicRoomState(roomId: string, asHost = false): PublicRoomState | null {
+  getPublicRoomState(
+    roomId: string,
+    asHost = false,
+    playerId?: string,
+  ): PublicRoomState | null {
     if (asHost) {
       return this.getHostRoomState(roomId);
     }
-    return this.getPlayerRoomState(roomId);
+    return this.getPlayerRoomState(roomId, playerId);
   }
 
   addPlayer(input: JoinRoomInput): Player {

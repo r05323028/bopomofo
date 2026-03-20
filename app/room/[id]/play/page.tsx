@@ -4,11 +4,17 @@ import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { PixiGameBackground } from "@/components/PixiGameBackground";
+import { WordBox } from "@/components/WordBox";
 import { allGuessableSymbols } from "@/lib/game/constants";
+import type { PlayerRoomState } from "@/lib/game/types";
 import { getSocket } from "@/lib/socket";
 import { useRoomState } from "@/lib/useRoomState";
 
 type GuessMode = "component" | "answer";
+
+function isPlayerRoomState(state: unknown): state is PlayerRoomState {
+  return Boolean(state && typeof state === "object" && "ownAnswer" in state);
+}
 
 export default function PlayPage() {
   const params = useParams<{ id: string }>();
@@ -77,6 +83,7 @@ export default function PlayPage() {
   const targets = roomState.players.filter(
     (player) => player.id !== playerId && !player.isEliminated,
   );
+  const playerState = isPlayerRoomState(roomState) ? roomState : null;
 
   if (!me) {
     return (
@@ -124,6 +131,23 @@ export default function PlayPage() {
           >
             你已被淘汰。
           </div>
+        ) : null}
+
+        {playerState && playerState.ownAnswer.length > 0 ? (
+          <section className="rounded-2xl border-[3px] border-primary/20 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-text-muted">
+              我的答案
+            </p>
+            <div className="mt-3">
+              <WordBox
+                answer={playerState.ownAnswer}
+                fullyRevealed
+                guessedComponents={guessed}
+                showOnlyTone={false}
+                maskCharacter={false}
+              />
+            </div>
+          </section>
         ) : null}
 
         {roomState.phase === "in-game" && isMyTurn && !me.isEliminated ? (

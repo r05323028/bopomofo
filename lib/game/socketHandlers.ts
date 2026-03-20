@@ -62,7 +62,10 @@ export function registerSocketHandlers(io: Server): void {
 
         const roomState = socket.data.isHost
           ? gameRoomManager.getHostRoomState(payload.roomId)
-          : gameRoomManager.getPlayerRoomState(payload.roomId);
+          : gameRoomManager.getPlayerRoomState(
+              payload.roomId,
+              socket.data.playerId as string | undefined,
+            );
 
         if (roomState) {
           socket.emit("room-state", roomState);

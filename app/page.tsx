@@ -56,7 +56,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background p-6 text-text sm:p-10">
+    <main className="flex min-h-screen items-center justify-center bg-background p-6 text-text sm:p-10">
       <div className="mx-auto max-w-xl rounded-3xl border-[3px] border-primary/15 bg-surface p-6 shadow-[0_6px_0_0_rgb(79_70_229/0.15)] sm:p-8">
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-cta font-display">
           注音派對

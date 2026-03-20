@@ -134,7 +134,7 @@ export default function HostRoomPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background p-6">
       <PixiGameBackground intensity="medium" />
-      <div className="relative z-10 mx-auto max-w-6xl space-y-4">
+      <div className="relative z-10 mx-auto max-w-[1400px] space-y-4">
         <header className="rounded-2xl border-[3px] border-primary/15 bg-surface p-4 shadow-[0_3px_0_0_rgb(79_70_229/0.15)]">
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-cta font-display">
             房主畫面
@@ -148,7 +148,7 @@ export default function HostRoomPage() {
         </header>
 
         {roomState.phase === "lobby" ? (
-          <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <div className="grid gap-4 lg:grid-cols-[2.4fr_1fr] xl:grid-cols-[2.7fr_1fr]">
             <section className="rounded-2xl border-[3px] border-primary/15 bg-surface p-4 shadow-[0_3px_0_0_rgb(79_70_229/0.15)]">
               <h2 className="text-sm font-bold uppercase tracking-wide text-primary font-display">
                 玩家（{roomState.players.length}）
@@ -241,7 +241,7 @@ export default function HostRoomPage() {
               <p className="mb-3 text-sm text-error font-medium">{error}</p>
             ) : null}
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <AnimatePresence initial={false}>
                 {roomState.players.map((player) => (
                   <motion.article

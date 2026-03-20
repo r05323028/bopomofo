@@ -58,6 +58,15 @@ export function useRoomState(
           return current;
         }
 
+        if ("ownAnswer" in current) {
+          return {
+            ...current,
+            reveal: {
+              guessedComponents: payload.guessedComponents,
+            },
+          };
+        }
+
         return {
           ...current,
           reveal: {

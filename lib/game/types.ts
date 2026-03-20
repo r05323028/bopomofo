@@ -63,6 +63,7 @@ export type PlayerRoomState = {
   wordCount: number;
   phase: RoomPhase;
   players: Player[];
+  ownAnswer: PlayerAnswer;
   turnOrder: string[];
   activePlayerId: string | null;
   winnerId: string | null;
