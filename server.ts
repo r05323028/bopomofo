@@ -235,7 +235,10 @@ void app.prepare().then(() => {
     });
   });
 
-  const io = new Server(server);
+  const io = new Server(server, {
+    pingInterval: 5000,
+    pingTimeout: 7000,
+  });
   setSocketServer(io);
   registerSocketHandlers(io);
 

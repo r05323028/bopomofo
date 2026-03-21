@@ -54,3 +54,4 @@ export const allGuessableSymbols = [
 
 export const roomTtlMs = 2 * 60 * 60 * 1000;
 export const roomCleanupIntervalMs = 10 * 60 * 1000;
+export const reconnectGraceMs = 30 * 1000;

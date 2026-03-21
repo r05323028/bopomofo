@@ -12,6 +12,18 @@ import { useRoomState } from "@/lib/useRoomState";
 
 type GuessMode = "component" | "answer";
 
+function getPresenceText(status: "connected" | "reconnecting" | "offline") {
+  if (status === "connected") {
+    return "在線";
+  }
+
+  if (status === "reconnecting") {
+    return "重連中";
+  }
+
+  return "離線";
+}
+
 function isPlayerRoomState(state: unknown): state is PlayerRoomState {
   return Boolean(state && typeof state === "object" && "ownAnswer" in state);
 }
@@ -121,6 +133,9 @@ export default function PlayPage() {
               : roomState.phase === "game-over"
                 ? "遊戲結束"
                 : "等待房主開始遊戲..."}
+          </p>
+          <p className="mt-1 text-xs font-semibold text-text-muted">
+            連線狀態：{getPresenceText(me.connectionStatus)}
           </p>
         </header>
 

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.roomCleanupIntervalMs = exports.roomTtlMs = exports.allGuessableSymbols = exports.bopomofoRightTones = exports.bopomofoTopTones = exports.bopomofoFinals = exports.bopomofoMedials = exports.bopomofoInitials = void 0;
+exports.reconnectGraceMs = exports.roomCleanupIntervalMs = exports.roomTtlMs = exports.allGuessableSymbols = exports.bopomofoRightTones = exports.bopomofoTopTones = exports.bopomofoFinals = exports.bopomofoMedials = exports.bopomofoInitials = void 0;
 exports.bopomofoInitials = [
     "ㄅ",
     "ㄆ",
@@ -52,3 +52,4 @@ exports.allGuessableSymbols = [
 ];
 exports.roomTtlMs = 2 * 60 * 60 * 1000;
 exports.roomCleanupIntervalMs = 10 * 60 * 1000;
+exports.reconnectGraceMs = 30 * 1000;

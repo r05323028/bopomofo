@@ -22,6 +22,63 @@ type RoomInfo = {
 };
 
 const emptyAnswer: PlayerAnswer = [];
+const avatarMaxEdge = 160;
+const avatarQuality = 0.78;
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+        return;
+      }
+
+      reject(new Error("頭貼讀取失敗。"));
+    };
+    reader.onerror = () => {
+      reject(new Error("頭貼讀取失敗。"));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function dataUrlToImage(dataUrl: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new globalThis.Image();
+    image.onload = () => {
+      resolve(image);
+    };
+    image.onerror = () => {
+      reject(new Error("頭貼載入失敗。"));
+    };
+    image.src = dataUrl;
+  });
+}
+
+async function compressAvatar(file: File): Promise<string> {
+  const sourceDataUrl = await fileToDataUrl(file);
+  const image = await dataUrlToImage(sourceDataUrl);
+
+  const largestEdge = Math.max(image.width, image.height);
+  const scale = largestEdge > avatarMaxEdge ? avatarMaxEdge / largestEdge : 1;
+  const targetWidth = Math.max(1, Math.round(image.width * scale));
+  const targetHeight = Math.max(1, Math.round(image.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return sourceDataUrl;
+  }
+
+  context.drawImage(image, 0, 0, targetWidth, targetHeight);
+  const compressed = canvas.toDataURL("image/jpeg", avatarQuality);
+
+  return compressed.length < sourceDataUrl.length ? compressed : sourceDataUrl;
+}
 
 export default function JoinRoomPage() {
   const params = useParams<{ id: string }>();
@@ -226,13 +283,13 @@ export default function JoinRoomPage() {
                   return;
                 }
 
-                const reader = new FileReader();
-                reader.onload = () => {
-                  if (typeof reader.result === "string") {
-                    setAvatarUrl(reader.result);
-                  }
-                };
-                reader.readAsDataURL(file);
+                void compressAvatar(file)
+                  .then((result) => {
+                    setAvatarUrl(result);
+                  })
+                  .catch(() => {
+                    setError("頭貼處理失敗，請重新選擇圖片。");
+                  });
               }}
               type="file"
               aria-label="上傳頭貼圖片"

@@ -172,6 +172,8 @@ class GameRoomManager {
       isEliminated: false,
       hasSubmitted: false,
       joinedAt: Date.now(),
+      connectionStatus: "connected",
+      disconnectedAt: null,
     };
 
     room.players.push(player);
@@ -204,10 +206,32 @@ class GameRoomManager {
 
   allPlayersSubmitted(roomId: string): boolean {
     const room = this.requireRoom(roomId);
+
+    const activePlayers = room.players.filter((player) => !player.isEliminated);
+
     return (
-      room.players.length > 0 &&
-      room.players.every((player) => player.hasSubmitted)
+      activePlayers.length > 0 &&
+      activePlayers.every((player) => player.hasSubmitted)
     );
+  }
+
+  eliminateLobbyPlayer(roomId: string, hostId: string, playerId: string): void {
+    const room = this.requireRoom(roomId);
+
+    if (room.hostId !== hostId) {
+      throw new Error("只有房主可以淘汰玩家。");
+    }
+
+    if (room.phase !== "lobby") {
+      throw new Error("只能在大廳淘汰玩家。");
+    }
+
+    const player = this.requirePlayer(room, playerId);
+    if (player.isEliminated) {
+      throw new Error("玩家已經被淘汰。");
+    }
+
+    this.eliminatePlayer(roomId, playerId);
   }
 
   startGame(roomId: string, hostId: string): string {
@@ -306,6 +330,74 @@ class GameRoomManager {
   hasWinner(roomId: string): boolean {
     const room = this.requireRoom(roomId);
     return room.players.filter((player) => !player.isEliminated).length <= 1;
+  }
+
+  markPlayerConnected(roomId: string, playerId: string): boolean {
+    const room = this.requireRoom(roomId);
+    const player = this.requirePlayer(room, playerId);
+
+    if (player.connectionStatus === "connected") {
+      return false;
+    }
+
+    player.connectionStatus = "connected";
+    player.disconnectedAt = null;
+
+    if (room.phase === "in-game" && !room.activePlayerId) {
+      room.activePlayerId = this.findNextActivePlayer(room, null);
+    }
+
+    return true;
+  }
+
+  markPlayerDisconnected(roomId: string, playerId: string): boolean {
+    const room = this.requireRoom(roomId);
+    const player = this.requirePlayer(room, playerId);
+
+    if (player.connectionStatus === "reconnecting") {
+      return false;
+    }
+
+    player.connectionStatus = "reconnecting";
+    player.disconnectedAt = Date.now();
+    return true;
+  }
+
+  markPlayerOfflineIfStale(
+    roomId: string,
+    playerId: string,
+    expectedDisconnectedAt: number,
+  ): boolean {
+    const room = this.requireRoom(roomId);
+    const player = this.requirePlayer(room, playerId);
+
+    if (
+      player.connectionStatus !== "reconnecting" ||
+      player.disconnectedAt !== expectedDisconnectedAt
+    ) {
+      return false;
+    }
+
+    player.connectionStatus = "offline";
+    return true;
+  }
+
+  skipTurnIfUnavailable(roomId: string, playerId: string): string | null {
+    const room = this.requireRoom(roomId);
+    if (room.phase !== "in-game") {
+      return room.activePlayerId;
+    }
+
+    const player = this.requirePlayer(room, playerId);
+    const unavailable =
+      player.isEliminated || player.connectionStatus !== "connected";
+
+    if (!unavailable || room.activePlayerId !== player.id) {
+      return room.activePlayerId;
+    }
+
+    room.activePlayerId = this.findNextActivePlayer(room, room.activePlayerId);
+    return room.activePlayerId;
   }
 
   endGame(roomId: string): string | null {

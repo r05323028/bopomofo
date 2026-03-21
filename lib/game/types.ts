@@ -21,6 +21,8 @@ export type Player = {
   isEliminated: boolean;
   hasSubmitted: boolean;
   joinedAt: number;
+  connectionStatus: "connected" | "reconnecting" | "offline";
+  disconnectedAt: number | null;
 };
 
 export type RoomRevealState = {

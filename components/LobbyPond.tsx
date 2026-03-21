@@ -7,10 +7,15 @@ type LobbyPondPlayer = {
   id: string;
   displayName: string;
   avatarUrl: string | null;
+  isEliminated: boolean;
 };
 
 type LobbyPondProps = {
   players: LobbyPondPlayer[];
+  onPlayerContextMenu?: (
+    event: React.MouseEvent<HTMLDivElement>,
+    player: LobbyPondPlayer,
+  ) => void;
 };
 
 function hashString(input: string): number {
@@ -43,7 +48,10 @@ function positionFor(index: number, total: number): { x: number; y: number } {
   };
 }
 
-export function LobbyPond({ players }: Readonly<LobbyPondProps>) {
+export function LobbyPond({
+  players,
+  onPlayerContextMenu,
+}: Readonly<LobbyPondProps>) {
   return (
     <div className="lobby-pond relative mt-4 h-72 overflow-hidden rounded-3xl border-[3px] border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 p-4 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
       <div className="lobby-pond-ripple lobby-pond-ripple-a" />
@@ -99,7 +107,18 @@ export function LobbyPond({ players }: Readonly<LobbyPondProps>) {
             }}
           >
             <motion.div
-              className="rounded-2xl border-[3px] border-primary/30 bg-surface/90 px-3 py-2 shadow-[0_3px_0_0_rgb(79_70_229/0.2)] backdrop-blur-sm cursor-pointer transition-all duration-150"
+              className={`rounded-2xl border-[3px] px-3 py-2 shadow-[0_3px_0_0_rgb(79_70_229/0.2)] backdrop-blur-sm transition-all duration-150 ${
+                player.isEliminated
+                  ? "border-error/35 bg-error/10"
+                  : "border-primary/30 bg-surface/90 cursor-pointer"
+              }`}
+              onContextMenu={(event) => {
+                if (!onPlayerContextMenu) {
+                  return;
+                }
+
+                onPlayerContextMenu(event, player);
+              }}
               whileTap={{ scale: 0.95, y: 2 }}
             >
               <div className="flex items-center gap-2">
@@ -121,6 +140,9 @@ export function LobbyPond({ players }: Readonly<LobbyPondProps>) {
                   {player.displayName}
                 </span>
               </div>
+              {player.isEliminated ? (
+                <p className="mt-2 text-xs font-bold text-error">已淘汰</p>
+              ) : null}
             </motion.div>
           </motion.div>
         );
