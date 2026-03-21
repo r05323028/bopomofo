@@ -8,7 +8,9 @@
     "build:server": "tsc -p tsconfig.server.json",
     "start": "NODE_ENV=production node dist/server.js",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "test": "vitest",
+    "test:stress": "vitest run __tests__/stress"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
@@ -29,6 +31,7 @@
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.8"
   }
 }

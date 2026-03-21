@@ -121,18 +121,18 @@ export function LobbyPond({
               }}
               whileTap={{ scale: 0.95, y: 2 }}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-center gap-2 text-center">
                 {player.avatarUrl ? (
                   <Image
                     alt={`${player.displayName} 頭貼`}
-                    className="h-11 w-11 rounded-full border-[3px] border-primary/20 object-cover"
+                    className="h-28 w-28 rounded-full border-[3px] border-primary/20 object-cover"
                     src={player.avatarUrl}
                     unoptimized
-                    width={44}
-                    height={44}
+                    width={112}
+                    height={112}
                   />
                 ) : (
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-primary/20 bg-primary/10 text-sm font-bold text-primary font-display">
+                  <span className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-primary/20 bg-primary/10 text-2xl font-bold text-primary font-display">
                     ？
                   </span>
                 )}

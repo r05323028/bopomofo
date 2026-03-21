@@ -28,6 +28,8 @@ npm run format       # biome format --write
 npm run build        # next build + server build
 npm run build:server # tsc -p tsconfig.server.json
 npm start            # NODE_ENV=production node dist/server.js
+npm test             # run vitest tests
+npm run test:stress  # run stress tests only
 ```
 
 ## Gameplay Routes
@@ -52,3 +54,43 @@ Use platforms that support long-lived Node processes and WebSockets:
 
 - `PORT` (optional) - server port, default `3000`
 - `HOSTNAME` (optional) - hostname used in startup logs, default `localhost`
+
+## Testing
+
+### Stress Tests
+
+The project includes comprehensive stress tests that simulate full multiplayer game sessions with 10 concurrent players.
+
+**Prerequisites:**
+- Server must be running on `http://localhost:3000`
+- Run `npm install` to install test dependencies (Vitest)
+
+**Running stress tests:**
+
+```bash
+# In terminal 1: Start the dev server
+npm run dev
+
+# In terminal 2: Run stress tests
+npm run test:stress
+```
+
+**What the stress tests cover:**
+- Room creation and player joining (10 players)
+- Full game lifecycle from lobby to game-over
+- Turn-based gameplay with component guessing
+- Player elimination mechanics
+- Disconnect/reconnect behavior (1-2 reconnections per player)
+- WebSocket connection stability under load
+
+**Test structure:**
+- `__tests__/stress/game-flow.test.ts` - Main test suite
+- `__tests__/stress/utils/GameSimulator.ts` - Game orchestration logic
+- `__tests__/stress/utils/PlayerSimulator.ts` - Individual player simulation
+- `__tests__/stress/utils/helpers.ts` - Test utilities
+
+**Expected output:**
+- Test duration: ~30-60 seconds
+- Console logs showing game progress (turns, eliminations)
+- Final statistics: winner, total turns, reconnection counts
+- All tests should pass with final game state: `phase: "game-over"` and ≤1 alive player
