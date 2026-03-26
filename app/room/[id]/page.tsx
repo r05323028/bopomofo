@@ -277,37 +277,40 @@ export default function HostRoomPage() {
 
         {roomState.phase === "lobby" ? (
           <div className="grid gap-4 lg:grid-cols-[2.4fr_1fr] xl:grid-cols-[2.7fr_1fr]">
-            <section className="rounded-2xl border-[3px] border-primary/15 bg-surface p-4 shadow-[0_3px_0_0_rgb(79_70_229/0.15)]">
+            <section className="flex min-h-[72vh] flex-col rounded-2xl border-[3px] border-primary/15 bg-surface p-4 shadow-[0_3px_0_0_rgb(79_70_229/0.15)]">
               <h2 className="text-sm font-bold uppercase tracking-wide text-primary font-display">
                 玩家（{roomState.players.length}）
               </h2>
-              <LobbyPond
-                players={roomState.players.map((player) => ({
-                  id: player.id,
-                  displayName: player.displayName,
-                  avatarUrl: player.avatarUrl,
-                  isEliminated: player.isEliminated,
-                }))}
-                onPlayerContextMenu={onLobbyPlayerContextMenu}
-              />
-              <button
-                className="mt-4 rounded-2xl bg-primary text-white px-4 py-3 text-sm font-bold border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 font-display"
-                disabled={!allSubmitted}
-                onClick={startGame}
-                type="button"
-                aria-label="開始遊戲"
-              >
-                開始遊戲
-              </button>
+              <div className="mt-4 flex flex-1 flex-col">
+                <LobbyPond
+                  className="flex-1 min-h-[420px]"
+                  players={roomState.players.map((player) => ({
+                    id: player.id,
+                    displayName: player.displayName,
+                    avatarUrl: player.avatarUrl,
+                    isEliminated: player.isEliminated,
+                  }))}
+                  onPlayerContextMenu={onLobbyPlayerContextMenu}
+                />
+                <button
+                  className="mt-4 rounded-2xl bg-primary text-white px-4 py-3 text-sm font-bold border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2 font-display"
+                  disabled={!allSubmitted}
+                  onClick={startGame}
+                  type="button"
+                  aria-label="開始遊戲"
+                >
+                  開始遊戲
+                </button>
 
-              {localError ? (
-                <p className="mt-2 text-sm text-error font-medium">
-                  {localError}
-                </p>
-              ) : null}
-              {error ? (
-                <p className="mt-2 text-sm text-error font-medium">{error}</p>
-              ) : null}
+                {localError ? (
+                  <p className="mt-2 text-sm text-error font-medium">
+                    {localError}
+                  </p>
+                ) : null}
+                {error ? (
+                  <p className="mt-2 text-sm text-error font-medium">{error}</p>
+                ) : null}
+              </div>
             </section>
 
             <QRInvite joinUrl={joinUrl} />

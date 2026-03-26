@@ -12,6 +12,7 @@ type LobbyPondPlayer = {
 
 type LobbyPondProps = {
   players: LobbyPondPlayer[];
+  className?: string;
   onPlayerContextMenu?: (
     event: React.MouseEvent<HTMLDivElement>,
     player: LobbyPondPlayer,
@@ -50,10 +51,16 @@ function positionFor(index: number, total: number): { x: number; y: number } {
 
 export function LobbyPond({
   players,
+  className,
   onPlayerContextMenu,
 }: Readonly<LobbyPondProps>) {
+  const containerClassName = [
+    "lobby-pond relative overflow-hidden rounded-3xl border-[3px] border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 p-4 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]",
+    className ?? "mt-4 h-72",
+  ].join(" ");
+
   return (
-    <div className="lobby-pond relative mt-4 h-72 overflow-hidden rounded-3xl border-[3px] border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 p-4 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
+    <div className={containerClassName}>
       <div className="lobby-pond-ripple lobby-pond-ripple-a" />
       <div className="lobby-pond-ripple lobby-pond-ripple-b" />
       <div className="lobby-pond-ripple lobby-pond-ripple-c" />
