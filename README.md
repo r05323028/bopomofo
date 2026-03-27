@@ -1,5 +1,8 @@
 # Bopomo Party
 
+![GitHub License](https://img.shields.io/github/license/r05323028/bopomofo)
+![GitHub Release](https://img.shields.io/github/v/release/r05323028/bopomofo)
+
 Realtime multiplayer Bopomofo party game built with Next.js 16,
 TypeScript, and Socket.IO.
 
