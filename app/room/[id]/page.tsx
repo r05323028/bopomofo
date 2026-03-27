@@ -15,9 +15,9 @@ import { useRoomState } from "@/lib/useRoomState";
 function isHostRoomState(state: unknown): state is HostRoomState {
   return Boolean(
     state &&
-      typeof state === "object" &&
-      "answers" in state &&
-      "reveal" in state,
+    typeof state === "object" &&
+    "answers" in state &&
+    "reveal" in state,
   );
 }
 
@@ -67,6 +67,12 @@ type ComponentGuessedPayload = {
   playerName: string;
   symbol: string;
   guessedComponents: string[];
+};
+
+type AnswerGuessedPayload = {
+  guesserId: string;
+  targetId: string;
+  outcome: "correct" | "wrong";
 };
 
 type NoticeDialogState = {
@@ -235,12 +241,44 @@ export default function HostRoomPage() {
       });
     };
 
+    const handleAnswerGuessed = (payload: AnswerGuessedPayload) => {
+      const guesserName =
+        roomState?.players.find((player) => player.id === payload.guesserId)
+          ?.displayName ?? "未知玩家";
+      const targetName =
+        roomState?.players.find((player) => player.id === payload.targetId)
+          ?.displayName ?? "未知玩家";
+
+      if (payload.outcome === "correct") {
+        setNoticeDialog({
+          title: "玩家猜答案",
+          playerName: guesserName,
+          actionText: "擊敗了",
+          symbolText: `${targetName}玩家`,
+          detailText: `${guesserName}玩家擊敗${targetName}玩家`,
+          showInPhase: "in-game",
+        });
+        return;
+      }
+
+      setNoticeDialog({
+        title: "玩家猜答案",
+        playerName: guesserName,
+        actionText: "猜錯了",
+        symbolText: `${targetName}玩家的答案`,
+        detailText: `${guesserName}玩家猜錯${targetName}玩家的答案，${guesserName}玩家被淘汰了`,
+        showInPhase: "in-game",
+      });
+    };
+
     socket.on("lobby-pinyin-selected", handleLobbyPinyinSelected);
     socket.on("component-guessed", handleComponentGuessed);
+    socket.on("answer-guessed", handleAnswerGuessed);
 
     return () => {
       socket.off("lobby-pinyin-selected", handleLobbyPinyinSelected);
       socket.off("component-guessed", handleComponentGuessed);
+      socket.off("answer-guessed", handleAnswerGuessed);
     };
   }, [roomState?.activePlayerId, roomState?.players, socket]);
 
