@@ -13,6 +13,7 @@ type PickerType = "initial" | "medial" | "final" | "top-tone" | "right-tone";
 type BopomofoPickerProps = {
   open: boolean;
   type: PickerType;
+  selectedSymbol?: string | null;
   onClose: () => void;
   onSelect: (value: string | null) => void;
 };
@@ -28,6 +29,7 @@ const byType: Record<PickerType, readonly string[]> = {
 export function BopomofoPicker({
   open,
   type,
+  selectedSymbol,
   onClose,
   onSelect,
 }: Readonly<BopomofoPickerProps>) {
@@ -64,31 +66,54 @@ export function BopomofoPicker({
           </button>
         </div>
 
+        <p className="mb-3 text-xs font-medium text-zinc-500">
+          已選：
+          <span className="font-semibold text-primary">
+            {selectedSymbol
+              ? selectedSymbol === "1"
+                ? "一聲"
+                : selectedSymbol
+              : "尚未選擇"}
+          </span>
+        </p>
+
         <div className="grid grid-cols-6 gap-2">
-          {symbols.map((symbol) => (
-            <button
-              className="rounded-lg border border-zinc-200 bg-white px-2 py-2 text-lg font-medium text-zinc-900 hover:bg-zinc-50"
-              key={symbol}
-              onClick={() => {
-                onSelect(symbol);
-                onClose();
-              }}
-              type="button"
-            >
-              {isTonePicker ? (
-                <span className="tone-glyph">{symbol}</span>
-              ) : (
-                symbol
-              )}
-            </button>
-          ))}
+          {symbols.map((symbol) => {
+            const isSelected = selectedSymbol === symbol;
+
+            return (
+              <button
+                aria-pressed={isSelected}
+                className={`rounded-lg border px-2 py-2 text-lg font-medium transition-colors ${
+                  isSelected
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50"
+                }`}
+                key={symbol}
+                onClick={() => {
+                  onSelect(symbol);
+                }}
+                type="button"
+              >
+                {isTonePicker ? (
+                  <span className="tone-glyph">{symbol}</span>
+                ) : (
+                  symbol
+                )}
+              </button>
+            );
+          })}
 
           {showClear ? (
             <button
-              className="col-span-3 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+              aria-pressed={!selectedSymbol}
+              className={`col-span-3 rounded-lg border px-2 py-2 text-sm font-medium transition-colors ${
+                selectedSymbol
+                  ? "border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
+                  : "border-primary bg-primary/10 text-primary"
+              }`}
               onClick={() => {
                 onSelect(null);
-                onClose();
               }}
               type="button"
             >

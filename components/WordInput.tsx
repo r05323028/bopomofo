@@ -74,6 +74,25 @@ export function WordInput({
     onChange(next);
   };
 
+  const selectedSymbol = activePicker
+    ? (() => {
+        const row = rows[activePicker.rowIndex];
+        if (!row) {
+          return null;
+        }
+
+        if (activePicker.slot === "tone") {
+          return row.tone;
+        }
+
+        if (activePicker.slot === "topTone") {
+          return row.topTone;
+        }
+
+        return row[activePicker.slot];
+      })()
+    : null;
+
   return (
     <div className="space-y-3">
       {rows.map((row, index) => (
@@ -191,6 +210,7 @@ export function WordInput({
           });
         }}
         open={Boolean(activePicker)}
+        selectedSymbol={selectedSymbol}
         type={
           activePicker?.slot === "topTone"
             ? "top-tone"

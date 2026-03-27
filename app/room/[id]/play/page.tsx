@@ -165,132 +165,172 @@ export default function PlayPage() {
           </section>
         ) : null}
 
-        {roomState.phase === "in-game" && isMyTurn && !me.isEliminated ? (
+        {roomState.phase === "in-game" && !me.isEliminated ? (
           <section className="space-y-4 rounded-2xl border-[3px] border-primary/20 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
-            <div className="flex gap-2">
-              <motion.button
-                className={`cursor-pointer rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-150 ease-out ${
-                  mode === "component"
-                    ? "bg-primary text-white border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
-                    : "bg-surface text-text border-[3px] border-primary/20 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px]"
-                } focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2`}
-                onClick={() => setMode("component")}
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                aria-label="切換到猜注音符號模式"
-              >
-                猜注音符號
-              </motion.button>
-              <motion.button
-                className={`cursor-pointer rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-150 ease-out ${
-                  mode === "answer"
-                    ? "bg-primary text-white border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
-                    : "bg-surface text-text border-[3px] border-primary/20 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px]"
-                } focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2`}
-                onClick={() => setMode("answer")}
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                aria-label="切換到猜完整答案模式"
-              >
-                猜完整答案
-              </motion.button>
-            </div>
-
-            {mode === "component" ? (
-              <div className="grid grid-cols-7 gap-2 sm:grid-cols-9">
-                {allGuessableSymbols.map((symbol) => {
-                  const isToneSymbol =
-                    symbol === "ˊ" ||
-                    symbol === "ˇ" ||
-                    symbol === "ˋ" ||
-                    symbol === "˙";
-                  const display = symbol === "1" ? "一聲" : symbol;
-                  const disabled = guessed.has(symbol);
-
-                  return (
-                    <motion.button
-                      className={`rounded-2xl border-[3px] px-2 py-2 text-sm font-semibold transition-all duration-150 ease-out ${
-                        disabled
-                          ? "border-primary/10 bg-primary/5 text-text-muted cursor-not-allowed"
-                          : "cursor-pointer border-primary/30 bg-surface text-text shadow-[0_2px_0_0_rgb(79_70_229/0.2)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.2)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px] focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
-                      }`}
-                      disabled={disabled}
-                      key={symbol}
-                      onClick={() => {
-                        socket.emit("component-guess", {
-                          roomId,
-                          symbol,
-                        });
-                      }}
-                      type="button"
-                      whileTap={disabled ? undefined : { scale: 0.97 }}
-                      aria-label={`猜注音符號 ${display}`}
-                    >
-                      {isToneSymbol ? (
-                        <span className="tone-glyph">{display}</span>
-                      ) : (
-                        display
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            ) : (
-              <form
-                className="space-y-3"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  socket.emit("answer-guess", {
-                    roomId,
-                    targetId,
-                    word: guessWord,
-                  });
-                  setGuessWord("");
-                }}
-              >
-                <label className="block space-y-1">
-                  <span className="text-sm font-semibold text-text">
-                    目標玩家
-                  </span>
-                  <select
-                    className="w-full cursor-pointer rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
-                    onChange={(event) => setTargetId(event.target.value)}
-                    required
-                    value={targetId}
-                    aria-label="選擇目標玩家"
+            {isMyTurn ? (
+              <>
+                <div className="flex gap-2">
+                  <motion.button
+                    className={`cursor-pointer rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-150 ease-out ${
+                      mode === "component"
+                        ? "bg-primary text-white border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
+                        : "bg-surface text-text border-[3px] border-primary/20 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px]"
+                    } focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2`}
+                    onClick={() => setMode("component")}
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    aria-label="切換到猜注音符號模式"
                   >
-                    <option value="">選擇目標</option>
-                    {targets.map((target) => (
-                      <option key={target.id} value={target.id}>
-                        {target.displayName}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    猜注音符號
+                  </motion.button>
+                  <motion.button
+                    className={`cursor-pointer rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-150 ease-out ${
+                      mode === "answer"
+                        ? "bg-primary text-white border-[3px] border-primary shadow-[0_4px_0_0_rgb(79_70_229/0.8)] hover:shadow-[0_2px_0_0_rgb(79_70_229/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px]"
+                        : "bg-surface text-text border-[3px] border-primary/20 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px]"
+                    } focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2`}
+                    onClick={() => setMode("answer")}
+                    type="button"
+                    whileTap={{ scale: 0.98 }}
+                    aria-label="切換到猜完整答案模式"
+                  >
+                    猜完整答案
+                  </motion.button>
+                </div>
 
-                <label className="block space-y-1">
-                  <span className="text-sm font-semibold text-text">
-                    答案猜測
-                  </span>
-                  <input
-                    className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
-                    onChange={(event) => setGuessWord(event.target.value)}
-                    required
-                    value={guessWord}
-                    inputMode="text"
-                    autoComplete="off"
-                    aria-label="輸入答案猜測"
-                  />
-                </label>
+                {mode === "component" ? (
+                  <div className="grid grid-cols-7 gap-2 sm:grid-cols-9">
+                    {allGuessableSymbols.map((symbol) => {
+                      const isToneSymbol =
+                        symbol === "ˊ" ||
+                        symbol === "ˇ" ||
+                        symbol === "ˋ" ||
+                        symbol === "˙";
+                      const display = symbol === "1" ? "一聲" : symbol;
+                      const disabled = guessed.has(symbol);
 
-                <button
-                  className="cursor-pointer rounded-2xl bg-cta text-white px-4 py-3 text-sm font-bold border-[3px] border-cta shadow-[0_4px_0_0_rgb(249_115_22/0.8)] hover:shadow-[0_2px_0_0_rgb(249_115_22/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  type="submit"
-                  aria-label="送出答案猜測"
-                >
-                  送出答案猜測
-                </button>
-              </form>
+                      return (
+                        <motion.button
+                          className={`flex items-center justify-center rounded-2xl border-[3px] px-2 py-2 text-center text-sm font-semibold transition-all duration-150 ease-out ${
+                            disabled
+                              ? "border-primary/10 bg-primary/5 text-text-muted cursor-not-allowed"
+                              : "cursor-pointer border-primary/30 bg-surface text-text shadow-[0_2px_0_0_rgb(79_70_229/0.2)] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.2)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px] focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
+                          }`}
+                          disabled={disabled}
+                          key={symbol}
+                          onClick={() => {
+                            socket.emit("component-guess", {
+                              roomId,
+                              symbol,
+                            });
+                          }}
+                          type="button"
+                          whileTap={disabled ? undefined : { scale: 0.97 }}
+                          aria-label={`猜注音符號 ${display}`}
+                        >
+                          {isToneSymbol ? (
+                            <span className="tone-glyph">{display}</span>
+                          ) : (
+                            display
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <form
+                    className="space-y-3"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      socket.emit("answer-guess", {
+                        roomId,
+                        targetId,
+                        word: guessWord,
+                      });
+                      setGuessWord("");
+                    }}
+                  >
+                    <label className="block space-y-1">
+                      <span className="text-sm font-semibold text-text">
+                        目標玩家
+                      </span>
+                      <select
+                        className="w-full cursor-pointer rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
+                        onChange={(event) => setTargetId(event.target.value)}
+                        required
+                        value={targetId}
+                        aria-label="選擇目標玩家"
+                      >
+                        <option value="">選擇目標</option>
+                        {targets.map((target) => (
+                          <option key={target.id} value={target.id}>
+                            {target.displayName}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="block space-y-1">
+                      <span className="text-sm font-semibold text-text">
+                        答案猜測
+                      </span>
+                      <input
+                        className="w-full rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-3 shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 focus:border-primary focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2"
+                        onChange={(event) => setGuessWord(event.target.value)}
+                        required
+                        value={guessWord}
+                        inputMode="text"
+                        autoComplete="off"
+                        aria-label="輸入答案猜測"
+                      />
+                    </label>
+
+                    <button
+                      className="cursor-pointer rounded-2xl bg-cta text-white px-4 py-3 text-sm font-bold border-[3px] border-cta shadow-[0_4px_0_0_rgb(249_115_22/0.8)] hover:shadow-[0_2px_0_0_rgb(249_115_22/0.8)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                      type="submit"
+                      aria-label="送出答案猜測"
+                    >
+                      送出答案猜測
+                    </button>
+                  </form>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="rounded-2xl border-[3px] border-primary/15 bg-primary/5 px-4 py-3 text-sm font-semibold text-text-muted">
+                  目前是其他玩家回合，以下顯示已猜過/尚未猜過的注音進度。
+                </div>
+
+                <div className="grid grid-cols-7 gap-2 sm:grid-cols-9">
+                  {allGuessableSymbols.map((symbol) => {
+                    const isToneSymbol =
+                      symbol === "ˊ" ||
+                      symbol === "ˇ" ||
+                      symbol === "ˋ" ||
+                      symbol === "˙";
+                    const display = symbol === "1" ? "一聲" : symbol;
+                    const guessedAlready = guessed.has(symbol);
+
+                    return (
+                      <div
+                        className={`flex items-center justify-center rounded-2xl border-[3px] px-2 py-2 text-center text-sm font-semibold transition-all duration-150 ease-out ${
+                          guessedAlready
+                            ? "border-success/30 bg-success/10 text-success"
+                            : "border-primary/20 bg-surface text-text-muted"
+                        }`}
+                        key={symbol}
+                        title={`注音符號 ${display} ${guessedAlready ? "已猜過" : "未猜過"}`}
+                      >
+                        {isToneSymbol ? (
+                          <span className="tone-glyph">{display}</span>
+                        ) : (
+                          display
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </section>
         ) : null}
