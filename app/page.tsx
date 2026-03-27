@@ -56,7 +56,19 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-6 text-text sm:p-10">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-7 bg-background p-6 text-text sm:gap-9 sm:p-10">
+      <header className="pointer-events-none select-none text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-cta font-display">
+          bopomo party
+        </p>
+        <h1 className="hero-title mt-2 font-display text-4xl sm:text-5xl">
+          注音派對
+        </h1>
+        <p className="hero-subtitle mt-2 text-sm sm:text-base">
+          快速組局・即刻開玩
+        </p>
+      </header>
+
       <div className="mx-auto max-w-xl rounded-3xl border-[3px] border-primary/15 bg-surface p-6 shadow-[0_6px_0_0_rgb(79_70_229/0.15)] sm:p-8">
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-cta font-display">
           注音派對
