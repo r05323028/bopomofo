@@ -8,7 +8,7 @@ import { LobbyPond } from "@/components/LobbyPond";
 import { PixiGameBackground } from "@/components/PixiGameBackground";
 import { QRInvite } from "@/components/QRInvite";
 import { WordBox } from "@/components/WordBox";
-import type { HostRoomState } from "@/lib/game/types";
+import type { HostRoomState, LobbyPinyinSlot } from "@/lib/game/types";
 import { getSocket } from "@/lib/socket";
 import { useRoomState } from "@/lib/useRoomState";
 
@@ -55,6 +55,49 @@ type EliminateConfirmState = {
   displayName: string;
 };
 
+type LobbyPinyinSelectedPayload = {
+  playerName: string;
+  rowIndex: number;
+  slot: LobbyPinyinSlot;
+  symbol: string | null;
+};
+
+type ComponentGuessedPayload = {
+  playerId: string;
+  playerName: string;
+  symbol: string;
+  guessedComponents: string[];
+};
+
+type NoticeDialogState = {
+  title: string;
+  playerName: string;
+  actionText: string;
+  symbolText: string;
+  detailText?: string;
+  showInPhase: "lobby" | "in-game";
+};
+
+function getSlotLabel(slot: LobbyPinyinSlot): string {
+  if (slot === "initial") {
+    return "聲母";
+  }
+
+  if (slot === "medial") {
+    return "介音";
+  }
+
+  if (slot === "final") {
+    return "韻母";
+  }
+
+  if (slot === "topTone") {
+    return "上方聲調";
+  }
+
+  return "右側聲調";
+}
+
 export default function HostRoomPage() {
   const params = useParams<{ id: string }>();
   const roomId = params.id;
@@ -72,6 +115,9 @@ export default function HostRoomPage() {
   );
   const [confirmEliminate, setConfirmEliminate] =
     useState<EliminateConfirmState | null>(null);
+  const [noticeDialog, setNoticeDialog] = useState<NoticeDialogState | null>(
+    null,
+  );
 
   const allSubmitted = roomState?.players.some((player) => !player.isEliminated)
     ? roomState.players
@@ -141,6 +187,7 @@ export default function HostRoomPage() {
 
       setContextMenu(null);
       setConfirmEliminate(null);
+      setNoticeDialog(null);
     };
 
     window.addEventListener("pointerdown", handlePointerDown);
@@ -151,6 +198,65 @@ export default function HostRoomPage() {
       window.removeEventListener("keydown", handleEscape);
     };
   }, []);
+
+  useEffect(() => {
+    const handleLobbyPinyinSelected = (payload: LobbyPinyinSelectedPayload) => {
+      const selectedSymbol = payload.symbol ? payload.symbol : "清除";
+      const playerName = payload.playerName?.trim() || "未知玩家";
+      setNoticeDialog({
+        title: "玩家選擇拼音",
+        playerName,
+        actionText: `選了 ${getSlotLabel(payload.slot)}`,
+        symbolText: selectedSymbol,
+        detailText: `第 ${payload.rowIndex + 1} 列`,
+        showInPhase: "lobby",
+      });
+    };
+
+    const handleComponentGuessed = (payload: ComponentGuessedPayload) => {
+      const symbolLabel = payload.symbol === "1" ? "一聲" : payload.symbol;
+      const playerByPayloadId = roomState?.players.find(
+        (player) => player.id === payload.playerId,
+      )?.displayName;
+      const playerByTurnId = roomState?.players.find(
+        (player) => player.id === roomState.activePlayerId,
+      )?.displayName;
+      const playerName =
+        payload.playerName?.trim() ||
+        playerByPayloadId ||
+        playerByTurnId ||
+        "未知玩家";
+      setNoticeDialog({
+        title: "玩家猜注音",
+        playerName,
+        actionText: "猜了",
+        symbolText: symbolLabel,
+        showInPhase: "in-game",
+      });
+    };
+
+    socket.on("lobby-pinyin-selected", handleLobbyPinyinSelected);
+    socket.on("component-guessed", handleComponentGuessed);
+
+    return () => {
+      socket.off("lobby-pinyin-selected", handleLobbyPinyinSelected);
+      socket.off("component-guessed", handleComponentGuessed);
+    };
+  }, [roomState?.activePlayerId, roomState?.players, socket]);
+
+  useEffect(() => {
+    if (!noticeDialog) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setNoticeDialog(null);
+    }, 2200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [noticeDialog]);
 
   useEffect(() => {
     if (!roomState || roomState.phase !== "lobby") {
@@ -371,6 +477,48 @@ export default function HostRoomPage() {
                   type="button"
                 >
                   確認淘汰
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {noticeDialog &&
+        ((noticeDialog.showInPhase === "lobby" &&
+          roomState.phase === "lobby") ||
+          (noticeDialog.showInPhase === "in-game" &&
+            roomState.phase !== "lobby")) ? (
+          <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="pointer-events-auto w-full max-w-xl rounded-3xl border-[3px] border-primary/25 bg-surface p-7 shadow-[0_7px_0_0_rgb(79_70_229/0.2)]">
+              <h3 className="text-xl font-extrabold text-text font-display">
+                {noticeDialog.title}
+              </h3>
+              <div className="mt-4 space-y-2 text-text-muted">
+                <p className="text-lg font-semibold">
+                  「
+                  <span className="text-2xl font-black text-text">
+                    {noticeDialog.playerName}
+                  </span>
+                  」{noticeDialog.actionText}：
+                </p>
+                <p className="text-4xl leading-none font-black text-primary font-display">
+                  {noticeDialog.symbolText}
+                </p>
+                {noticeDialog.detailText ? (
+                  <p className="text-sm font-semibold text-text-muted">
+                    {noticeDialog.detailText}
+                  </p>
+                ) : null}
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  className="rounded-2xl border-[3px] border-primary/20 bg-surface px-4 py-2 text-base font-bold text-text shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all hover:translate-y-[1px] hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)]"
+                  onClick={() => {
+                    setNoticeDialog(null);
+                  }}
+                  type="button"
+                >
+                  關閉
                 </button>
               </div>
             </div>

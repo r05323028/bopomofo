@@ -5,7 +5,12 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { WordInput } from "@/components/WordInput";
-import type { PlayerAnswer, RoomPhase } from "@/lib/game/types";
+import type {
+  LobbyPinyinSlot,
+  PlayerAnswer,
+  RoomPhase,
+} from "@/lib/game/types";
+import { getSocket } from "@/lib/socket";
 
 type RoomInfo = {
   id: string;
@@ -91,6 +96,25 @@ export default function JoinRoomPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const socket = getSocket();
+
+  useEffect(() => {
+    socket.emit("join-room", { roomId });
+  }, [roomId, socket]);
+
+  const emitLobbyPinyinSelected = (payload: {
+    rowIndex: number;
+    slot: LobbyPinyinSlot;
+    symbol: string | null;
+  }) => {
+    socket.emit("lobby-pinyin-selected", {
+      roomId,
+      playerName: name.trim() || "未命名玩家",
+      rowIndex: payload.rowIndex,
+      slot: payload.slot,
+      symbol: payload.symbol,
+    });
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -307,6 +331,7 @@ export default function JoinRoomPage() {
           </label>
 
           <WordInput
+            onPinyinSelect={emitLobbyPinyinSelected}
             onChange={setAnswer}
             value={answer}
             wordCount={roomInfo.wordCount}

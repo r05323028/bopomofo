@@ -3,9 +3,13 @@
 import { useMemo, useState } from "react";
 
 import { BopomofoPicker } from "@/components/BopomofoPicker";
-import type { BopomofoCell, PlayerAnswer } from "@/lib/game/types";
+import type {
+  BopomofoCell,
+  LobbyPinyinSlot,
+  PlayerAnswer,
+} from "@/lib/game/types";
 
-type SlotType = "initial" | "medial" | "final" | "topTone" | "tone";
+type SlotType = LobbyPinyinSlot;
 
 type ActivePicker = {
   rowIndex: number;
@@ -16,6 +20,11 @@ type WordInputProps = {
   wordCount: number;
   value: PlayerAnswer;
   onChange: (value: PlayerAnswer) => void;
+  onPinyinSelect?: (payload: {
+    rowIndex: number;
+    slot: LobbyPinyinSlot;
+    symbol: string | null;
+  }) => void;
 };
 
 function createRows(count: number): PlayerAnswer {
@@ -33,6 +42,7 @@ export function WordInput({
   wordCount,
   value,
   onChange,
+  onPinyinSelect,
 }: Readonly<WordInputProps>) {
   const [activePicker, setActivePicker] = useState<ActivePicker | null>(null);
   const rowKeys = useMemo(
@@ -151,6 +161,11 @@ export function WordInput({
             updateRow(activePicker.rowIndex, {
               topTone: symbol as BopomofoCell["topTone"],
             });
+            onPinyinSelect?.({
+              rowIndex: activePicker.rowIndex,
+              slot: activePicker.slot,
+              symbol,
+            });
             return;
           }
 
@@ -158,11 +173,21 @@ export function WordInput({
             updateRow(activePicker.rowIndex, {
               tone: symbol as BopomofoCell["tone"],
             });
+            onPinyinSelect?.({
+              rowIndex: activePicker.rowIndex,
+              slot: activePicker.slot,
+              symbol,
+            });
             return;
           }
 
           updateRow(activePicker.rowIndex, {
             [activePicker.slot]: symbol,
+          });
+          onPinyinSelect?.({
+            rowIndex: activePicker.rowIndex,
+            slot: activePicker.slot,
+            symbol,
           });
         }}
         open={Boolean(activePicker)}

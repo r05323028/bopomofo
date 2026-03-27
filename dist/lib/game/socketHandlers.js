@@ -3,6 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerSocketHandlers = registerSocketHandlers;
 const constants_1 = require("./constants");
 const roomManager_1 = require("./roomManager");
+const validLobbyPinyinSlots = [
+    "initial",
+    "medial",
+    "final",
+    "topTone",
+    "tone",
+];
 function emitError(socket, message) {
     socket.emit("error", { message });
 }
@@ -175,8 +182,14 @@ function registerSocketHandlers(io) {
                     emitError(socket, "這個符號已經猜過了。");
                     return;
                 }
+                const activePlayer = room.players.find((entry) => entry.id === playerId);
+                if (!activePlayer) {
+                    return;
+                }
                 roomManager_1.gameRoomManager.addGuessedComponent(payload.roomId, payload.symbol);
                 io.to(payload.roomId).emit("component-guessed", {
+                    playerId,
+                    playerName: activePlayer.displayName,
                     symbol: payload.symbol,
                     guessedComponents: room.reveal.guessedComponents,
                 });
@@ -242,6 +255,28 @@ function registerSocketHandlers(io) {
             catch (error) {
                 emitError(socket, error instanceof Error ? error.message : "處理猜測失敗。");
             }
+        });
+        socket.on("lobby-pinyin-selected", (payload) => {
+            const room = roomManager_1.gameRoomManager.getRoom(payload.roomId);
+            if (!room || room.phase !== "lobby") {
+                return;
+            }
+            if (socket.data.roomId !== payload.roomId) {
+                return;
+            }
+            if (!validLobbyPinyinSlots.includes(payload.slot)) {
+                return;
+            }
+            const playerName = payload.playerName.trim();
+            if (!playerName) {
+                return;
+            }
+            io.to(payload.roomId).emit("lobby-pinyin-selected", {
+                playerName,
+                rowIndex: payload.rowIndex,
+                slot: payload.slot,
+                symbol: payload.symbol,
+            });
         });
         socket.on("disconnect", () => {
             const roomId = socket.data.roomId;

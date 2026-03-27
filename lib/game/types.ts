@@ -75,3 +75,10 @@ export type PlayerRoomState = {
 export type PublicRoomState = HostRoomState | PlayerRoomState;
 
 export type GuessOutcome = "correct" | "wrong";
+
+export type LobbyPinyinSlot =
+  | "initial"
+  | "medial"
+  | "final"
+  | "topTone"
+  | "tone";

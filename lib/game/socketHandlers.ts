@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import { allGuessableSymbols, reconnectGraceMs } from "./constants";
 import { gameRoomManager } from "./roomManager";
+import type { LobbyPinyinSlot } from "./types";
 
 type JoinRoomPayload = {
   roomId: string;
@@ -30,6 +31,22 @@ type AnswerGuessPayload = {
   targetId: string;
   word: string;
 };
+
+type LobbyPinyinSelectedPayload = {
+  roomId: string;
+  playerName: string;
+  rowIndex: number;
+  slot: LobbyPinyinSlot;
+  symbol: string | null;
+};
+
+const validLobbyPinyinSlots: readonly LobbyPinyinSlot[] = [
+  "initial",
+  "medial",
+  "final",
+  "topTone",
+  "tone",
+];
 
 function emitError(socket: Socket, message: string): void {
   socket.emit("error", { message });
@@ -269,9 +286,18 @@ export function registerSocketHandlers(io: Server): void {
           return;
         }
 
+        const activePlayer = room.players.find(
+          (entry) => entry.id === playerId,
+        );
+        if (!activePlayer) {
+          return;
+        }
+
         gameRoomManager.addGuessedComponent(payload.roomId, payload.symbol);
 
         io.to(payload.roomId).emit("component-guessed", {
+          playerId,
+          playerName: activePlayer.displayName,
           symbol: payload.symbol,
           guessedComponents: room.reveal.guessedComponents,
         });
@@ -354,6 +380,36 @@ export function registerSocketHandlers(io: Server): void {
         );
       }
     });
+
+    socket.on(
+      "lobby-pinyin-selected",
+      (payload: LobbyPinyinSelectedPayload) => {
+        const room = gameRoomManager.getRoom(payload.roomId);
+        if (!room || room.phase !== "lobby") {
+          return;
+        }
+
+        if (socket.data.roomId !== payload.roomId) {
+          return;
+        }
+
+        if (!validLobbyPinyinSlots.includes(payload.slot)) {
+          return;
+        }
+
+        const playerName = payload.playerName.trim();
+        if (!playerName) {
+          return;
+        }
+
+        io.to(payload.roomId).emit("lobby-pinyin-selected", {
+          playerName,
+          rowIndex: payload.rowIndex,
+          slot: payload.slot,
+          symbol: payload.symbol,
+        });
+      },
+    );
 
     socket.on("disconnect", () => {
       const roomId = socket.data.roomId as string | undefined;
