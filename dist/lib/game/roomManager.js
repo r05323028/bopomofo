@@ -4,6 +4,23 @@ exports.gameRoomManager = void 0;
 const constants_1 = require("./constants");
 const socketServer_1 = require("./socketServer");
 const utils_1 = require("./utils");
+function getMaskedPlayerAnswer(answer, guessedComponents, fullyRevealed) {
+    if (fullyRevealed) {
+        return answer;
+    }
+    const guessedSet = new Set(guessedComponents);
+    return answer.map((cell) => {
+        const toneVisible = cell.tone === null ? guessedSet.has("1") : guessedSet.has(cell.tone);
+        return {
+            character: "?",
+            topTone: cell.topTone && guessedSet.has(cell.topTone) ? cell.topTone : null,
+            initial: cell.initial && guessedSet.has(cell.initial) ? cell.initial : null,
+            medial: cell.medial && guessedSet.has(cell.medial) ? cell.medial : null,
+            final: cell.final && guessedSet.has(cell.final) ? cell.final : null,
+            tone: toneVisible ? cell.tone : null,
+        };
+    });
+}
 class GameRoomManager {
     constructor() {
         this.rooms = new Map();
@@ -69,6 +86,15 @@ class GameRoomManager {
             return null;
         }
         const ownAnswer = playerId ? (room.answers[playerId] ?? []) : [];
+        const publicBoards = room.players.reduce((boards, player) => {
+            const answer = room.answers[player.id] ?? [];
+            const fullyRevealed = Boolean(room.reveal.playerWordRevealed[player.id]);
+            boards[player.id] =
+                player.id === playerId
+                    ? answer
+                    : getMaskedPlayerAnswer(answer, room.reveal.guessedComponents, fullyRevealed);
+            return boards;
+        }, {});
         return {
             id: room.id,
             topic: room.topic,
@@ -76,11 +102,13 @@ class GameRoomManager {
             phase: room.phase,
             players: room.players,
             ownAnswer,
+            publicBoards,
             turnOrder: room.turnOrder,
             activePlayerId: room.activePlayerId,
             winnerId: room.winnerId,
             reveal: {
                 guessedComponents: room.reveal.guessedComponents,
+                playerWordRevealed: room.reveal.playerWordRevealed,
             },
         };
     }

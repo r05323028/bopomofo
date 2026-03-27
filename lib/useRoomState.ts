@@ -10,11 +10,6 @@ type UseRoomStateResult = {
   connected: boolean;
 };
 
-type ComponentGuessedPayload = {
-  symbol: string;
-  guessedComponents: string[];
-};
-
 type TurnStartedPayload = {
   activePlayerId: string | null;
 };
@@ -72,31 +67,6 @@ export function useRoomState(
     const handleRoomState = (payload: PublicRoomState) => {
       setRoomState(payload);
       setError(null);
-    };
-
-    const handleComponentGuessed = (payload: ComponentGuessedPayload) => {
-      setRoomState((current) => {
-        if (!current) {
-          return current;
-        }
-
-        if ("ownAnswer" in current) {
-          return {
-            ...current,
-            reveal: {
-              guessedComponents: payload.guessedComponents,
-            },
-          };
-        }
-
-        return {
-          ...current,
-          reveal: {
-            ...current.reveal,
-            guessedComponents: payload.guessedComponents,
-          },
-        };
-      });
     };
 
     const handleTurnStarted = (payload: TurnStartedPayload) => {
@@ -181,7 +151,7 @@ export function useRoomState(
     socket.on("answer-submitted", handleAnswerSubmitted);
     socket.on("game-started", rejoin);
     socket.on("turn-started", handleTurnStarted);
-    socket.on("component-guessed", handleComponentGuessed);
+    socket.on("component-guessed", rejoin);
     socket.on("answer-guessed", rejoin);
     socket.on("player-eliminated", rejoin);
     socket.on("player-presence-changed", handlePresenceChanged);
@@ -197,7 +167,7 @@ export function useRoomState(
       socket.off("answer-submitted", handleAnswerSubmitted);
       socket.off("game-started", rejoin);
       socket.off("turn-started", handleTurnStarted);
-      socket.off("component-guessed", handleComponentGuessed);
+      socket.off("component-guessed", rejoin);
       socket.off("answer-guessed", rejoin);
       socket.off("player-eliminated", rejoin);
       socket.off("player-presence-changed", handlePresenceChanged);

@@ -66,10 +66,11 @@ export type PlayerRoomState = {
   phase: RoomPhase;
   players: Player[];
   ownAnswer: PlayerAnswer;
+  publicBoards: Record<string, PlayerAnswer>;
   turnOrder: string[];
   activePlayerId: string | null;
   winnerId: string | null;
-  reveal: Pick<RoomRevealState, "guessedComponents">;
+  reveal: Pick<RoomRevealState, "guessedComponents" | "playerWordRevealed">;
 };
 
 export type PublicRoomState = HostRoomState | PlayerRoomState;

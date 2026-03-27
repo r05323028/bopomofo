@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PixiGameBackground } from "@/components/PixiGameBackground";
 import { WordBox } from "@/components/WordBox";
 import { allGuessableSymbols } from "@/lib/game/constants";
-import type { PlayerRoomState } from "@/lib/game/types";
+import type { PlayerAnswer, PlayerRoomState } from "@/lib/game/types";
 import { getSocket } from "@/lib/socket";
 import { useRoomState } from "@/lib/useRoomState";
 
@@ -22,6 +23,18 @@ function getPresenceText(status: "connected" | "reconnecting" | "offline") {
   }
 
   return "離線";
+}
+
+function getPresenceClass(status: "connected" | "reconnecting" | "offline") {
+  if (status === "connected") {
+    return "text-success";
+  }
+
+  if (status === "reconnecting") {
+    return "text-amber-600";
+  }
+
+  return "text-text-muted";
 }
 
 function isPlayerRoomState(state: unknown): state is PlayerRoomState {
@@ -54,6 +67,88 @@ export default function PlayPage() {
     () => new Set(roomState?.reveal.guessedComponents ?? []),
     [roomState?.reveal.guessedComponents],
   );
+  const playerState = isPlayerRoomState(roomState) ? roomState : null;
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const [activeBoardIndex, setActiveBoardIndex] = useState(0);
+
+  const boardCards = useMemo(() => {
+    if (!playerState) {
+      return [];
+    }
+
+    return (roomState?.players ?? []).map((player) => {
+      const isSelf = player.id === playerId;
+
+      return {
+        id: player.id,
+        displayName: isSelf
+          ? `${player.displayName}（你）`
+          : player.displayName,
+        isSelf,
+        isEliminated: player.isEliminated,
+        connectionStatus: player.connectionStatus,
+        avatarUrl: player.avatarUrl,
+        isCurrentTurn: roomState?.activePlayerId === player.id,
+        answer: isSelf
+          ? playerState.ownAnswer
+          : (playerState.publicBoards?.[player.id] ?? []),
+        fullyRevealed: isSelf
+          ? true
+          : Boolean(playerState.reveal.playerWordRevealed?.[player.id]),
+      };
+    });
+  }, [playerId, playerState, roomState?.activePlayerId, roomState?.players]);
+
+  const placeholderAnswer = useMemo<PlayerAnswer>(() => {
+    const rowCount = roomState?.wordCount ?? 0;
+
+    return Array.from({ length: rowCount }, () => ({
+      character: "?",
+      initial: null,
+      medial: null,
+      final: null,
+      topTone: null,
+      tone: null,
+    }));
+  }, [roomState?.wordCount]);
+
+  const scrollToBoard = useCallback(
+    (nextIndex: number) => {
+      const container = carouselRef.current;
+      if (!container || boardCards.length === 0) {
+        return;
+      }
+
+      const bounded = Math.min(Math.max(nextIndex, 0), boardCards.length - 1);
+      container.scrollTo({
+        left: bounded * container.clientWidth,
+        behavior: "smooth",
+      });
+      setActiveBoardIndex(bounded);
+    },
+    [boardCards.length],
+  );
+
+  const handleCarouselScroll = useCallback(() => {
+    const container = carouselRef.current;
+    if (!container || boardCards.length === 0) {
+      return;
+    }
+
+    const nextIndex = Math.round(container.scrollLeft / container.clientWidth);
+    const bounded = Math.min(Math.max(nextIndex, 0), boardCards.length - 1);
+    setActiveBoardIndex(bounded);
+  }, [boardCards.length]);
+
+  useEffect(() => {
+    setActiveBoardIndex((current) => {
+      if (boardCards.length === 0) {
+        return 0;
+      }
+
+      return Math.min(current, boardCards.length - 1);
+    });
+  }, [boardCards.length]);
 
   if (!roomState) {
     return (
@@ -95,7 +190,6 @@ export default function PlayPage() {
   const targets = roomState.players.filter(
     (player) => player.id !== playerId && !player.isEliminated,
   );
-  const playerState = isPlayerRoomState(roomState) ? roomState : null;
 
   if (!me) {
     return (
@@ -148,19 +242,120 @@ export default function PlayPage() {
           </div>
         ) : null}
 
-        {playerState && playerState.ownAnswer.length > 0 ? (
+        {playerState ? (
           <section className="rounded-2xl border-[3px] border-primary/20 bg-surface p-6 shadow-[0_4px_0_0_rgb(79_70_229/0.15)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-text-muted">
-              我的答案
-            </p>
-            <div className="mt-3">
-              <WordBox
-                answer={playerState.ownAnswer}
-                fullyRevealed
-                guessedComponents={guessed}
-                showOnlyTone={false}
-                maskCharacter={false}
-              />
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-text-muted">
+                玩家狀態
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  className="cursor-pointer rounded-xl border-[3px] border-primary/20 bg-surface px-3 py-1.5 text-xs font-semibold text-text shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 ease-out hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px] disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={activeBoardIndex <= 0}
+                  onClick={() => {
+                    scrollToBoard(activeBoardIndex - 1);
+                  }}
+                  type="button"
+                  aria-label="查看上一位玩家狀態"
+                >
+                  上一位
+                </button>
+                <button
+                  className="cursor-pointer rounded-xl border-[3px] border-primary/20 bg-surface px-3 py-1.5 text-xs font-semibold text-text shadow-[0_2px_0_0_rgb(79_70_229/0.1)] transition-all duration-150 ease-out hover:shadow-[0_1px_0_0_rgb(79_70_229/0.1)] hover:translate-y-[1px] active:shadow-none active:translate-y-[2px] disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={activeBoardIndex >= boardCards.length - 1}
+                  onClick={() => {
+                    scrollToBoard(activeBoardIndex + 1);
+                  }}
+                  type="button"
+                  aria-label="查看下一位玩家狀態"
+                >
+                  下一位
+                </button>
+              </div>
+            </div>
+
+            <div
+              className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2"
+              onScroll={handleCarouselScroll}
+              ref={carouselRef}
+            >
+              {boardCards.map((card) => (
+                <article
+                  className="min-w-full snap-center rounded-2xl border-[3px] border-primary/15 bg-surface p-3 shadow-[0_3px_0_0_rgb(79_70_229/0.15)]"
+                  key={card.id}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      {card.avatarUrl ? (
+                        <Image
+                          alt={`${card.displayName} 頭貼`}
+                          className="h-8 w-8 rounded-full border-[2px] border-primary/20 object-cover"
+                          src={card.avatarUrl}
+                          unoptimized
+                          width={32}
+                          height={32}
+                        />
+                      ) : (
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full border-[2px] border-primary/20 bg-primary/10 text-sm font-bold text-primary">
+                          ？
+                        </span>
+                      )}
+                      <p className="text-2xl font-black text-text font-display">
+                        {card.displayName}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`text-3xl font-black font-display ${getPresenceClass(
+                        card.connectionStatus,
+                      )}`}
+                    >
+                      {getPresenceText(card.connectionStatus)}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {card.isCurrentTurn ? (
+                      <span className="rounded-full border-[2px] border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                        目前回合
+                      </span>
+                    ) : null}
+                    {card.isEliminated ? (
+                      <span className="rounded-full border-[2px] border-error/30 bg-error/10 px-2 py-0.5 text-xs font-bold text-error">
+                        已淘汰
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-3 rounded-2xl border-[3px] border-primary/20 bg-primary/5 p-3">
+                    <WordBox
+                      answer={
+                        card.answer.length > 0 ? card.answer : placeholderAnswer
+                      }
+                      fullyRevealed={card.fullyRevealed}
+                      guessedComponents={guessed}
+                      showOnlyTone={false}
+                      maskCharacter={!card.isSelf && !card.fullyRevealed}
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-2 flex justify-center gap-1.5">
+              {boardCards.map((card, index) => (
+                <button
+                  className={`h-2.5 w-2.5 cursor-pointer rounded-full transition-colors ${
+                    index === activeBoardIndex ? "bg-primary" : "bg-primary/20"
+                  }`}
+                  key={card.id}
+                  onClick={() => {
+                    scrollToBoard(index);
+                  }}
+                  type="button"
+                  aria-label={`切換到 ${card.displayName}`}
+                />
+              ))}
             </div>
           </section>
         ) : null}

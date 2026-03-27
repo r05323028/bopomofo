@@ -34,6 +34,34 @@ type GuessAnswerInput = {
   word: string;
 };
 
+function getMaskedPlayerAnswer(
+  answer: PlayerAnswer,
+  guessedComponents: readonly string[],
+  fullyRevealed: boolean,
+): PlayerAnswer {
+  if (fullyRevealed) {
+    return answer;
+  }
+
+  const guessedSet = new Set(guessedComponents);
+
+  return answer.map((cell) => {
+    const toneVisible =
+      cell.tone === null ? guessedSet.has("1") : guessedSet.has(cell.tone);
+
+    return {
+      character: "?",
+      topTone:
+        cell.topTone && guessedSet.has(cell.topTone) ? cell.topTone : null,
+      initial:
+        cell.initial && guessedSet.has(cell.initial) ? cell.initial : null,
+      medial: cell.medial && guessedSet.has(cell.medial) ? cell.medial : null,
+      final: cell.final && guessedSet.has(cell.final) ? cell.final : null,
+      tone: toneVisible ? cell.tone : null,
+    };
+  });
+}
+
 class GameRoomManager {
   private readonly rooms = new Map<string, GameRoom>();
 
@@ -114,6 +142,26 @@ class GameRoomManager {
     }
 
     const ownAnswer = playerId ? (room.answers[playerId] ?? []) : [];
+    const publicBoards = room.players.reduce<Record<string, PlayerAnswer>>(
+      (boards, player) => {
+        const answer = room.answers[player.id] ?? [];
+        const fullyRevealed = Boolean(
+          room.reveal.playerWordRevealed[player.id],
+        );
+
+        boards[player.id] =
+          player.id === playerId
+            ? answer
+            : getMaskedPlayerAnswer(
+                answer,
+                room.reveal.guessedComponents,
+                fullyRevealed,
+              );
+
+        return boards;
+      },
+      {},
+    );
 
     return {
       id: room.id,
@@ -122,11 +170,13 @@ class GameRoomManager {
       phase: room.phase,
       players: room.players,
       ownAnswer,
+      publicBoards,
       turnOrder: room.turnOrder,
       activePlayerId: room.activePlayerId,
       winnerId: room.winnerId,
       reveal: {
         guessedComponents: room.reveal.guessedComponents,
+        playerWordRevealed: room.reveal.playerWordRevealed,
       },
     };
   }
