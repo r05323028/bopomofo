@@ -15,9 +15,9 @@ import { useRoomState } from "@/lib/useRoomState";
 function isHostRoomState(state: unknown): state is HostRoomState {
   return Boolean(
     state &&
-    typeof state === "object" &&
-    "answers" in state &&
-    "reveal" in state,
+      typeof state === "object" &&
+      "answers" in state &&
+      "reveal" in state,
   );
 }
 
