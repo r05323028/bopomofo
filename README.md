@@ -3,6 +3,8 @@
 ![GitHub License](https://img.shields.io/github/license/r05323028/bopomofo)
 ![GitHub Release](https://img.shields.io/github/v/release/r05323028/bopomofo)
 
+![Logo](docs/img/logo.png)
+
 Realtime multiplayer Bopomofo party game built with Next.js 16,
 TypeScript, and Socket.IO.
 
@@ -11,6 +13,12 @@ TypeScript, and Socket.IO.
 Bopomo Party is a real-time room-based game where a host creates a room,
 players join from their own devices, and everyone progresses through a
 turn-based game flow over WebSockets.
+
+## Screenshots
+
+![Lobby](docs/img/lobby.png)
+![Player join](docs/img/player_join.png)
+![Playing](docs/img/playing.png)
 
 ## Tech Stack
 
