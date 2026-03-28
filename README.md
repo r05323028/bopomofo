@@ -16,9 +16,9 @@ turn-based game flow over WebSockets.
 
 ## Screenshots
 
-![Lobby](docs/img/lobby.png)
-![Player join](docs/img/player_join.png)
-![Playing](docs/img/playing.png)
+|Lobby|Player Joining|Playing|
+|---|---|---|
+|![Lobby](docs/img/lobby.png)|![Player join](docs/img/player_join.png)|![Playing](docs/img/playing.png)|
 
 ## Tech Stack
 
